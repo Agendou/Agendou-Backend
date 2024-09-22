@@ -8,6 +8,10 @@ import backend.agendou.auth.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import backend.agendou.auth.dto.request.LoginRequest;
+import backend.agendou.auth.security.JwtUtil;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +28,12 @@ public class UsuarioService {
         this.repository = repository;
         this.mapper = mapper;
     }
+
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public ResponseEntity<String> login(String email, String senha){
         System.out.println("Iniciando login para o email: " + email);
@@ -68,8 +78,6 @@ public class UsuarioService {
                     .body("Ocorreu um erro durante o cadastro do usuário.");
         }
     }
-
-    // Add the following method to the UsuarioService class
 
     public List<UsuarioResponseDTO> listarUsuarios() {
         List<Usuario> usuarios = repository.findAll();
@@ -119,4 +127,14 @@ public class UsuarioService {
         }
     }
 
+    public String autenticar(LoginRequest loginRequest) {
+        Usuario usuario = repository.findByEmail(loginRequest.getEmail())
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
+
+        if (!passwordEncoder.matches(loginRequest.getSenha(), usuario.getSenha())) {
+            throw new RuntimeException("Senha incorreta");
+        }
+
+        return jwtUtil.generateToken(usuario.getEmail());
+    }
 }

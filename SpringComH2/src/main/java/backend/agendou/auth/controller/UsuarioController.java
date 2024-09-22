@@ -1,8 +1,8 @@
 package backend.agendou.auth.controller;
 
+import backend.agendou.auth.dto.request.LoginRequest;
 import backend.agendou.auth.dto.request.UsuarioRequestDTO;
 import backend.agendou.auth.dto.response.UsuarioResponseDTO;
-import backend.agendou.auth.model.Usuario;
 import backend.agendou.auth.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -68,5 +68,11 @@ public class UsuarioController {
         } catch (Exception e) {
             return ResponseEntity.status(400).body("Ocorreu um erro durante a deleção do usuário.");
         }
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+        String token = service.autenticar(loginRequest);
+        return ResponseEntity.ok(token);
     }
 }
