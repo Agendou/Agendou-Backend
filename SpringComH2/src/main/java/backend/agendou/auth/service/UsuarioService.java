@@ -8,6 +8,10 @@ import backend.agendou.auth.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import backend.agendou.auth.dto.request.LoginRequestDTO;
+import backend.agendou.auth.security.JwtUtil;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,6 +29,12 @@ public class UsuarioService {
         this.mapper = mapper;
     }
 
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     public ResponseEntity<String> login(String email, String senha){
         System.out.println("Iniciando login para o email: " + email);
         try {
@@ -33,8 +43,9 @@ public class UsuarioService {
                 return ResponseEntity.status(401).body("Usuário não encontrado.");
             }
             Usuario usuarioEntity = optionalUsuario.get();
+            UsuarioResponseDTO usuarioResponse = mapper.toDTO(usuarioEntity);
 
-            if (!passwordEncoder.matches(senha, usuarioEntity.getSenha())) {
+            if (!usuarioResponse.getSenha().equals(senha)) {
                 return ResponseEntity.status(401).body("Senha incorreta.");
             }
 
@@ -45,27 +56,28 @@ public class UsuarioService {
         }
     }
 
-
     public ResponseEntity<String> cadastrarUsuario(UsuarioRequestDTO usuarioRequest) {
         try {
-            Optional<Usuario> usuarioExistente = repository.findByEmail(usuarioRequest.getEmail());
+            Optional<Usuario> usuarioExistente = (Optional<Usuario>) repository.findByEmail(usuarioRequest.getEmail());
 
             if (usuarioExistente.isPresent()) {
                 return ResponseEntity.status(409).body("Já existe um usuário com este e-mail.");
             }
 
             Usuario usuario = mapper.toEntity(usuarioRequest);
-            usuario.setSenha(passwordEncoder.encode(usuarioRequest.getSenha()));  // Criptografa a senha
+            usuario.setEmail(usuarioRequest.getEmail());
+            usuario.setSenha(usuarioRequest.getSenha());
+            usuario.setNome(usuarioRequest.getNome());
+            usuario.setTipo(usuarioRequest.getTipo());
 
             repository.save(usuario);
 
             return ResponseEntity.status(201).body("Usuário cadastrado com sucesso.");
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("Ocorreu um erro durante o cadastro do usuário.");
+            return ResponseEntity.status(500)
+                    .body("Ocorreu um erro durante o cadastro do usuário.");
         }
     }
-
-    // Add the following method to the UsuarioService class
 
     public List<UsuarioResponseDTO> listarUsuarios() {
         List<Usuario> usuarios = repository.findAll();
@@ -115,4 +127,14 @@ public class UsuarioService {
         }
     }
 
+    public String autenticar(LoginRequestDTO loginRequestDTO) {
+        Usuario usuario = repository.findByEmail(loginRequestDTO.getEmail())
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
+
+        if (!passwordEncoder.matches(loginRequestDTO.getSenha(), usuario.getSenha())) {
+            throw new RuntimeException("Senha incorreta");
+        }
+
+        return jwtUtil.generateToken(usuario.getEmail());
+    }
 }

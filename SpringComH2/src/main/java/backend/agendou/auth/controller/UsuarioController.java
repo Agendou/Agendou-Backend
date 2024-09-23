@@ -1,8 +1,8 @@
 package backend.agendou.auth.controller;
 
+import backend.agendou.auth.dto.request.LoginRequestDTO;
 import backend.agendou.auth.dto.request.UsuarioRequestDTO;
 import backend.agendou.auth.dto.response.UsuarioResponseDTO;
-import backend.agendou.auth.model.Usuario;
 import backend.agendou.auth.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,16 +20,6 @@ public class UsuarioController {
 
     @Autowired
     private UsuarioService service;
-
-    @GetMapping("/login")
-    public ResponseEntity<String> login(@RequestParam String email, @RequestParam String senha) {
-        System.out.println("Recebida requisição de login com email: " + email);
-        try {
-            return service.login(email, senha);
-        } catch (Exception e) {
-            return ResponseEntity.status(401).body("E-mail ou senha inválido.");
-        }
-    }
 
     @GetMapping("/listar")
     public ResponseEntity<List<UsuarioResponseDTO>> listarUsuarios() {
@@ -68,5 +58,11 @@ public class UsuarioController {
         } catch (Exception e) {
             return ResponseEntity.status(400).body("Ocorreu um erro durante a deleção do usuário.");
         }
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequestDTO loginRequestDTO) {
+        String token = service.autenticar(loginRequestDTO);
+        return ResponseEntity.ok(token);
     }
 }
