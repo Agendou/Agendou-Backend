@@ -1,6 +1,6 @@
 package backend.agendou.auth.controller;
 
-import backend.agendou.auth.dto.request.LoginRequest;
+import backend.agendou.auth.dto.request.LoginRequestDTO;
 import backend.agendou.auth.dto.request.UsuarioRequestDTO;
 import backend.agendou.auth.dto.response.UsuarioResponseDTO;
 import backend.agendou.auth.service.UsuarioService;
@@ -61,8 +61,8 @@ public class UsuarioController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
-        String token = service.autenticar(loginRequest);
+    public ResponseEntity<?> login(@RequestBody LoginRequestDTO loginRequestDTO) {
+        String token = service.autenticar(loginRequestDTO);
         return ResponseEntity.ok(token);
     }
 }

@@ -8,7 +8,7 @@ import backend.agendou.auth.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import backend.agendou.auth.dto.request.LoginRequest;
+import backend.agendou.auth.dto.request.LoginRequestDTO;
 import backend.agendou.auth.security.JwtUtil;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -127,11 +127,11 @@ public class UsuarioService {
         }
     }
 
-    public String autenticar(LoginRequest loginRequest) {
-        Usuario usuario = repository.findByEmail(loginRequest.getEmail())
+    public String autenticar(LoginRequestDTO loginRequestDTO) {
+        Usuario usuario = repository.findByEmail(loginRequestDTO.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
 
-        if (!passwordEncoder.matches(loginRequest.getSenha(), usuario.getSenha())) {
+        if (!passwordEncoder.matches(loginRequestDTO.getSenha(), usuario.getSenha())) {
             throw new RuntimeException("Senha incorreta");
         }
 
