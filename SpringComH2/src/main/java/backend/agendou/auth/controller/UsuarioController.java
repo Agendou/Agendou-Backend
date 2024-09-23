@@ -21,16 +21,6 @@ public class UsuarioController {
     @Autowired
     private UsuarioService service;
 
-    @GetMapping("/login")
-    public ResponseEntity<String> login(@RequestParam String email, @RequestParam String senha) {
-        System.out.println("Recebida requisição de login com email: " + email);
-        try {
-            return service.login(email, senha);
-        } catch (Exception e) {
-            return ResponseEntity.status(401).body("E-mail ou senha inválido.");
-        }
-    }
-
     @GetMapping("/listar")
     public ResponseEntity<List<UsuarioResponseDTO>> listarUsuarios() {
         try {
