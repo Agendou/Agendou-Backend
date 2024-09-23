@@ -43,9 +43,8 @@ public class UsuarioService {
                 return ResponseEntity.status(401).body("Usuário não encontrado.");
             }
             Usuario usuarioEntity = optionalUsuario.get();
-            UsuarioResponseDTO usuarioResponse = mapper.toDTO(usuarioEntity);
 
-            if (!usuarioResponse.getSenha().equals(senha)) {
+            if (!passwordEncoder.matches(senha, usuarioEntity.getSenha())) {
                 return ResponseEntity.status(401).body("Senha incorreta.");
             }
 
@@ -56,26 +55,23 @@ public class UsuarioService {
         }
     }
 
+
     public ResponseEntity<String> cadastrarUsuario(UsuarioRequestDTO usuarioRequest) {
         try {
-            Optional<Usuario> usuarioExistente = (Optional<Usuario>) repository.findByEmail(usuarioRequest.getEmail());
+            Optional<Usuario> usuarioExistente = repository.findByEmail(usuarioRequest.getEmail());
 
             if (usuarioExistente.isPresent()) {
                 return ResponseEntity.status(409).body("Já existe um usuário com este e-mail.");
             }
 
             Usuario usuario = mapper.toEntity(usuarioRequest);
-            usuario.setEmail(usuarioRequest.getEmail());
-            usuario.setSenha(usuarioRequest.getSenha());
-            usuario.setNome(usuarioRequest.getNome());
-            usuario.setTipo(usuarioRequest.getTipo());
+            usuario.setSenha(passwordEncoder.encode(usuarioRequest.getSenha()));  // Criptografa a senha
 
             repository.save(usuario);
 
             return ResponseEntity.status(201).body("Usuário cadastrado com sucesso.");
         } catch (Exception e) {
-            return ResponseEntity.status(500)
-                    .body("Ocorreu um erro durante o cadastro do usuário.");
+            return ResponseEntity.status(500).body("Ocorreu um erro durante o cadastro do usuário.");
         }
     }
 
