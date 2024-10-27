@@ -9,19 +9,25 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 @Entity
-public class Servico {
+@Table(name = "funcionario")
+public class Funcionario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_servico")
+    @Column(name = "id_funcionario")
     private Integer id;
 
     @Column(name = "nome")
     private String nome;
 
-    @Column(name = "preco")
-    private Double preco;
+    @Column(name = "email")
+    private String email;
 
-    @Column(name = "descricao")
-    private String descricao;
+    @ManyToOne
+    @JoinColumn(name = "fk_Empresa")
+    private Empresa fk_empresa;
+
+    @OneToOne
+    @JoinColumn(name = "fk_Usuario")
+    private Usuario fk_usuario;
 }

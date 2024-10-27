@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @Data
 public class ServicoResponseDTO {
 
-        private Integer id;
-        private String nome;
-        private Double preco;
-        private String descricao;
+    private Integer id;
+    private String nome;
+    private Double preco;
+    private String descricao;
 }

@@ -9,18 +9,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 @Entity
-@Table public class Comerciante {
+@Table(name = "avaliacao")
+public class Avaliacao {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "id_avaliacao")
     private Integer id;
-    @Column(name = "nome")
-    private String nome;
-    @Column(name = "email")
-    private String email;
-    @Column(name = "telefone")
-    private String telefone;
 
-
+    @Column(name = "estrelas")
+    private Integer estrelas;
 }

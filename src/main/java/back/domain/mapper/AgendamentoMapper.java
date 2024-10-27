@@ -10,19 +10,19 @@ import org.springframework.stereotype.Component;
 public class AgendamentoMapper {
 
     public Agendamento toEntity(AgendamentoRequestDTO agendamentoRequestDTO) {
-        Agendamento agendamento = new Agendamento();
-
-        agendamento.setDataHoraCorte(agendamentoRequestDTO.getDataHoraCorte());
-        agendamento.setProfissional(agendamentoRequestDTO.getProfissional());
-        return agendamento;
+        if (agendamentoRequestDTO == null) {return null;}
+        return Agendamento.builder()
+                .descricao(agendamentoRequestDTO.getDescricao())
+                .data(agendamentoRequestDTO.getData())
+                .build();
     }
 
     public AgendamentoResponseDTO toDTO(Agendamento entity) {
-        AgendamentoResponseDTO dto = new AgendamentoResponseDTO();
-
-        dto.setId(entity.getId());
-        dto.setDataHoraCorte(entity.getDataHoraCorte());
-        dto.setProfissional(entity.getProfissional());
-        return dto;
+        if (entity == null) {return null;}
+        return AgendamentoResponseDTO.builder()
+                .id(entity.getId())
+                .descricao(entity.getDescricao())
+                .data(entity.getData())
+                .build();
     }
 }
