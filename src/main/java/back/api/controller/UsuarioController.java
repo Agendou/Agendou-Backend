@@ -36,11 +36,11 @@ public class UsuarioController {
             @ApiResponse(responseCode = "200", description = "Successful login"),
             @ApiResponse(responseCode = "401", description = "Unauthorized")
     })
-    @GetMapping("/login")
-    public ResponseEntity<String> login(@RequestBody UsuarioRequestDTO body) {
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody UsuarioRequestDTO body) {
         Usuario user = this.repository.findByEmail(body.getEmail()).orElseThrow(() -> new RuntimeException("usuário não encontrado"));
         System.out.println("Recebida requisição de login com email: " + body.getEmail());
-        return ResponseEntity.status(200).build();
+        return service.login(body);
 
     }
 

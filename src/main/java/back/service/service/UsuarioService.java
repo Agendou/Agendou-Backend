@@ -26,19 +26,21 @@ public class UsuarioService {
     private final PasswordEncoder passwordEncoder;
     private final TokenService tokenService;
 
-    public ResponseEntity<String> login(UsuarioRequestDTO body) {
+    public ResponseEntity<?> login(UsuarioRequestDTO body) {
         Optional<Usuario> optionalUsuario = repository.findByEmail(body.getEmail());
         if(optionalUsuario.isEmpty()){
             return ResponseEntity.status(401).body("Usuário não encontrado.");
         }
         Usuario usuarioEntity = optionalUsuario.get();
-        UsuarioResponseDTO usuarioResponse = mapper.toUsuarioResponseDto(usuarioEntity);
 
-        if (!passwordEncoder.matches(body.getSenha(), usuarioEntity.getSenha())) {
+        UsuarioResponseDTO usuarioResponse = mapper.toUsuarioResponseDto(usuarioEntity);
+        usuarioResponse.setToken(tokenService.generateToken(usuarioEntity));
+
+        if (passwordEncoder.matches(body.getSenha(), usuarioEntity.getSenha())) {
             return ResponseEntity.status(401).body("Senha incorreta.");
         }
 
-        return ResponseEntity.ok("Login realizado com sucesso!");
+        return ResponseEntity.ok(usuarioResponse);
     }
 
 
@@ -56,8 +58,6 @@ public class UsuarioService {
         Usuario usuarioSalvo = repository.save(usuario);
 
         UsuarioResponseDTO responseDTO = mapper.toUsuarioResponseDto(usuarioSalvo);
-        String token = this.tokenService.generateToken(usuarioSalvo);
-        System.out.println("token: " + token);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
