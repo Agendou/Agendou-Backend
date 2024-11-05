@@ -1,9 +1,13 @@
 package back.api.controller;
 
+import back.api.config.security.TokenService;
 import back.domain.dto.request.UsuarioRequestDTO;
 import back.domain.dto.response.UsuarioResponseDTO;
+import back.domain.model.Usuario;
+import back.domain.repository.UsuarioRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
@@ -23,6 +27,9 @@ import java.util.List;
 public class UsuarioController {
 
     private final UsuarioService service;
+    private final UsuarioRepository repository;
+    private final PasswordEncoder passwordEncoder;
+    private final TokenService tokenService;
 
     @Operation(summary = "Login usuário", description = "Realiza o login do usuário")
     @ApiResponses(value = {
@@ -30,9 +37,11 @@ public class UsuarioController {
             @ApiResponse(responseCode = "401", description = "Unauthorized")
     })
     @GetMapping("/login")
-    public ResponseEntity<String> login(@RequestParam String email, @RequestParam String senha) {
-        System.out.println("Recebida requisição de login com email: " + email);
-        return service.login(email, senha);
+    public ResponseEntity<String> login(@RequestBody UsuarioRequestDTO body) {
+        Usuario user = this.repository.findByEmail(body.getEmail()).orElseThrow(() -> new RuntimeException("usuário não encontrado"));
+        System.out.println("Recebida requisição de login com email: " + body.getEmail());
+        return ResponseEntity.status(200).build();
+
     }
 
     @Operation(summary = "Lista de usuários", description = "Lista todos os usuários")
