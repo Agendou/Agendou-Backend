@@ -36,6 +36,7 @@ public class Usuario implements UserDetails {
     @Column(name = "telefone")
     private String telefone;
 
+    @Column(name = "role")
     private UsuarioRole role;
 
     @Override

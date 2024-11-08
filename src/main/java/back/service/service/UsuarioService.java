@@ -8,6 +8,7 @@ import back.domain.repository.UsuarioRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -28,6 +29,9 @@ public class UsuarioService {
         if(optionalUsuario.isEmpty()){
             return ResponseEntity.status(401).body("Usuário não encontrado.");
         }
+
+
+
         Usuario usuarioEntity = optionalUsuario.get();
         UsuarioResponseDTO usuarioResponse = mapper.toUsuarioResponseDto(usuarioEntity);
 
@@ -45,9 +49,11 @@ public class UsuarioService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Email ja cadastrado");
         }
 
+        String encryptedPassword = new BCryptPasswordEncoder().encode(dto.getSenha());
+
         Usuario usuario = mapper.toEntity(dto);
         usuario.setNome(dto.getNome());
-        usuario.setSenha(dto.getSenha());
+        usuario.setSenha(encryptedPassword);
         usuario.setEmail(dto.getEmail());
         usuario.setTelefone(dto.getTelefone());
         Usuario usuarioSalvo = repository.save(usuario);
