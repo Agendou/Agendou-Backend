@@ -36,6 +36,7 @@ public class Usuario implements UserDetails {
     @Column(name = "telefone")
     private String telefone;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "role")
     private UsuarioRole role;
 
@@ -47,12 +48,12 @@ public class Usuario implements UserDetails {
 
     @Override
     public String getPassword() {
-        return senha;
+        return this.senha;
     }
 
     @Override
     public String getUsername() {
-        return nome;
+        return this.email;
     }
 
     @Override

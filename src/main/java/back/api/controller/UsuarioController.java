@@ -29,10 +29,10 @@ public class UsuarioController {
             @ApiResponse(responseCode = "200", description = "Successful login"),
             @ApiResponse(responseCode = "401", description = "Unauthorized")
     })
-    @GetMapping("/login")
-    public ResponseEntity<String> login(@RequestParam String email, @RequestParam String senha) {
-        System.out.println("Recebida requisição de login com email: " + email);
-        return service.login(email, senha);
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody @Valid UsuarioRequestDTO usuario) {
+        System.out.println("Recebida requisição de login com email: " + usuario.getEmail());
+        return service.login(usuario.getEmail(), usuario.getSenha());
     }
 
     @Operation(summary = "Lista de usuários", description = "Lista todos os usuários")

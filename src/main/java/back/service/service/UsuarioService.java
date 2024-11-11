@@ -1,5 +1,6 @@
 package back.service.service;
 
+import back.api.config.security.TokenService;
 import back.domain.dto.request.UsuarioRequestDTO;
 import back.domain.dto.response.UsuarioResponseDTO;
 import back.domain.mapper.UsuarioMapper;
@@ -8,6 +9,8 @@ import back.domain.repository.UsuarioRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -22,15 +25,22 @@ public class UsuarioService {
 
     private final UsuarioRepository repository;
     private final UsuarioMapper mapper;
+    private AuthenticationManager authenticationManager;
+    private TokenService tokenService;
+
 
     public ResponseEntity<String> login(String email, String senha){
         System.out.println("Iniciando login para o email: " + email);
+
+        var usernamePassword = new UsernamePasswordAuthenticationToken(email, senha);
+        var auth = this.authenticationManager.authenticate(usernamePassword);
+
+        var token = tokenService.generateToken((Usuario) auth.getPrincipal());
+
         Optional<Usuario> optionalUsuario = repository.findByEmail(email);
         if(optionalUsuario.isEmpty()){
             return ResponseEntity.status(401).body("Usuário não encontrado.");
         }
-
-
 
         Usuario usuarioEntity = optionalUsuario.get();
         UsuarioResponseDTO usuarioResponse = mapper.toUsuarioResponseDto(usuarioEntity);
@@ -56,6 +66,7 @@ public class UsuarioService {
         usuario.setSenha(encryptedPassword);
         usuario.setEmail(dto.getEmail());
         usuario.setTelefone(dto.getTelefone());
+        usuario.setRole(dto.getRole());
         Usuario usuarioSalvo = repository.save(usuario);
 
         UsuarioResponseDTO responseDTO = mapper.toUsuarioResponseDto(usuarioSalvo);
