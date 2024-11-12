@@ -4,7 +4,10 @@ import back.domain.dto.request.FuncionarioRequestDTO;
 import back.domain.dto.response.FuncionarioResponseDTO;
 import back.domain.mapper.FuncionarioMapper;
 import back.domain.model.Funcionario;
+import back.domain.model.Servico;
 import back.domain.repository.FuncionarioRepository;
+import back.domain.repository.ServicoRepository;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +24,7 @@ public class FuncionarioService {
 
     private final FuncionarioRepository repository;
     private final FuncionarioMapper mapper;
+    private final ServicoRepository servicoRepository;
 
     public ResponseEntity<String> login(String email, String senha){
         System.out.println("Iniciando login para o email: " + email);
@@ -38,28 +42,24 @@ public class FuncionarioService {
         return ResponseEntity.ok("Login realizado com sucesso!");
     }
 
+    @Transactional
+    public ResponseEntity<?> cadastrarFuncionario(FuncionarioRequestDTO funcionarioRequestDTO) {
+        try {
+            Funcionario funcionario = new Funcionario();
+            funcionario.setNome(funcionarioRequestDTO.getNome());
+            funcionario.setEmail(funcionarioRequestDTO.getEmail());
+            funcionario.setSenha(funcionarioRequestDTO.getSenha());
+            funcionario.setTelefone(funcionarioRequestDTO.getTelefone());
 
-    public ResponseEntity<?> cadastrarFuncionario(FuncionarioRequestDTO dto){
+            List<Servico> servicos = servicoRepository.findAllById(funcionarioRequestDTO.getServicos());
+            funcionario.setServicos(servicos);
 
-        if(repository.existsByEmail(dto.getEmail())){
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email ja cadastrado");
+            repository.save(funcionario);
+            return ResponseEntity.status(201).body("Funcionário cadastrado com sucesso");
+        } catch (Exception e) {
+            return ResponseEntity.status(400).body("Erro ao cadastrar funcionário: " + e.getMessage());
         }
-
-        Funcionario funcionario = mapper.toEntity(dto);
-        funcionario.setNome(dto.getNome());
-        funcionario.setSenha(dto.getSenha());
-        funcionario.setEmail(dto.getEmail());
-        funcionario.setTelefone(dto.getTelefone());
-        Funcionario funcionarioSalvo = repository.save(funcionario);
-
-        FuncionarioResponseDTO responseDTO = mapper.toFuncionarioResponseDto(funcionarioSalvo);
-        System.out.println("usuario: " + responseDTO);
-
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(responseDTO);
     }
-
 
     public List<FuncionarioResponseDTO> listarFuncionarios() {
         List<Funcionario> funcionarios = repository.findAll();
