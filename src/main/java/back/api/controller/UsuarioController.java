@@ -30,7 +30,7 @@ public class UsuarioController {
             @ApiResponse(responseCode = "401", description = "Unauthorized")
     })
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody @Valid UsuarioRequestDTO usuario) {
+    public ResponseEntity<UsuarioResponseDTO> login(@RequestBody @Valid UsuarioRequestDTO usuario) {
         System.out.println("Recebida requisição de login com email: " + usuario.getEmail());
         return service.login(usuario.getEmail(), usuario.getSenha());
     }

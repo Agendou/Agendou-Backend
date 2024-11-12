@@ -10,8 +10,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -25,31 +24,30 @@ public class UsuarioService {
 
     private final UsuarioRepository repository;
     private final UsuarioMapper mapper;
-    private AuthenticationManager authenticationManager;
+    private final UsuarioRepository usuarioRepository;
     private TokenService tokenService;
+    private PasswordEncoder passwordEncoder;
 
 
-    public ResponseEntity<String> login(String email, String senha){
+    public ResponseEntity<UsuarioResponseDTO> login(String email, String senha){
         System.out.println("Iniciando login para o email: " + email);
 
-        var usernamePassword = new UsernamePasswordAuthenticationToken(email, senha);
-        var auth = this.authenticationManager.authenticate(usernamePassword);
+        Optional<Usuario> optionalUsuario = usuarioRepository.findByEmail(email);
+        var token = tokenService.generateToken(optionalUsuario.get());
+        System.out.println("Token: " + token);
 
-        var token = tokenService.generateToken((Usuario) auth.getPrincipal());
-
-        Optional<Usuario> optionalUsuario = repository.findByEmail(email);
         if(optionalUsuario.isEmpty()){
-            return ResponseEntity.status(401).body("Usuário não encontrado.");
+            return ResponseEntity.status(401).build();
         }
 
         Usuario usuarioEntity = optionalUsuario.get();
         UsuarioResponseDTO usuarioResponse = mapper.toUsuarioResponseDto(usuarioEntity);
 
-        if (!usuarioResponse.getSenha().equals(senha)) {
-            return ResponseEntity.status(401).body("Senha incorreta.");
+        if (!passwordEncoder.matches(senha,usuarioEntity.getPassword())) {
+            return ResponseEntity.status(401).build();
         }
 
-        return ResponseEntity.ok("Login realizado com sucesso!");
+        return ResponseEntity.ok(usuarioResponse);
     }
 
 
@@ -59,7 +57,7 @@ public class UsuarioService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Email ja cadastrado");
         }
 
-        String encryptedPassword = new BCryptPasswordEncoder().encode(dto.getSenha());
+        String encryptedPassword = passwordEncoder.encode(dto.getSenha());
 
         Usuario usuario = mapper.toEntity(dto);
         usuario.setNome(dto.getNome());
