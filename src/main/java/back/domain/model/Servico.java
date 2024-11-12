@@ -27,9 +27,9 @@ public class Servico {
     @Column(name = "descricao")
     private String descricao;
 
-//    @ManyToMany
-//    @JoinTable(name = "fk_funcionario",
-//    joinColumns = @JoinColumn(name = "id_servicos"),
-//    inverseJoinColumns = @JoinColumn(name = "id_funcionario"))
-//    private List<Funcionario> funcionarios;
+    @ManyToMany
+    @JoinTable(name = "fk_funcionario",
+    joinColumns = @JoinColumn(name = "id_servicos"),
+    inverseJoinColumns = @JoinColumn(name = "id_funcionario"))
+    private List<Funcionario> funcionarios;
 }
