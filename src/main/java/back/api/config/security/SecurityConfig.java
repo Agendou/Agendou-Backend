@@ -26,10 +26,15 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
                 .csrf(csrf -> csrf.disable())
+                .headers(headers -> headers.frameOptions().sameOrigin())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.POST, "/usuarios/cadastrar").permitAll()
                         .requestMatchers(HttpMethod.POST, "/usuarios/login").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/swagger-ui/**").permitAll()
+                        .requestMatchers("/h2-console/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/favicon.ico").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/v3/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/servicos").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/servicos").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/servicos").hasRole("ADMIN")
