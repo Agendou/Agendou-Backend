@@ -50,9 +50,10 @@ public class FuncionarioService {
             funcionario.setEmail(funcionarioRequestDTO.getEmail());
             funcionario.setSenha(funcionarioRequestDTO.getSenha());
             funcionario.setTelefone(funcionarioRequestDTO.getTelefone());
+//            funciona.setFkEmpresa(funcionarioRequestDTO.getFkEmpresa());
 
-            List<Servico> servicos = servicoRepository.findAllById(funcionarioRequestDTO.getServicos());
-            funcionario.setServicos(servicos);
+//            List<Servico> servicos = servicoRepository.findAllById(funcionarioRequestDTO.getServicos());
+//            funcionario.setServicos(servicos);
 
             repository.save(funcionario);
             return ResponseEntity.status(201).body("Funcionário cadastrado com sucesso");

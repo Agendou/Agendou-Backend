@@ -16,6 +16,7 @@ public class FuncionarioMapper {
             funcionario.setEmail(funcionarioRequestDTO.getEmail());
             funcionario.setTelefone(funcionarioRequestDTO.getTelefone());
             funcionario.setSenha(funcionarioRequestDTO.getSenha());
+            funcionario.setServicos(funcionarioRequestDTO.getServicos());
             result = funcionario;
         }
         return result;
@@ -32,6 +33,7 @@ public class FuncionarioMapper {
         funcionarioResponseDTO.setEmail(funcionario.getEmail());
         funcionarioResponseDTO.setSenha(funcionario.getSenha());
         funcionarioResponseDTO.setTelefone(funcionario.getTelefone());
+        funcionarioResponseDTO.setServicos(funcionario.getServicos());
 
         return funcionarioResponseDTO;
     }

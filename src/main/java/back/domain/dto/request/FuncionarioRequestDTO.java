@@ -1,9 +1,9 @@
 package back.domain.dto.request;
 
+import back.domain.model.Servico;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.core.SpringVersion;
 
 import java.util.List;
 
@@ -17,5 +17,5 @@ public class FuncionarioRequestDTO {
     private String senha;
     private String telefone;
 //    private Integer fk_empresa;
-    private List<Integer> servicos;
+    private List<Servico> servicos;
 }

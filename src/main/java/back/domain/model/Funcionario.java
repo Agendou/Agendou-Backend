@@ -31,9 +31,9 @@ public class Funcionario {
     @Column(name = "telefone")
     private String telefone;
 
-    @ManyToOne
-    @JoinColumn(name = "fk_empresa")
-    private Empresa fk_empresa;
+//    @ManyToOne
+//    @JoinColumn(name = "fk_empresa")
+//    private Empresa fk_empresa;
 
     @ManyToMany(mappedBy = "funcionarios")
     private List<Servico> servicos;
