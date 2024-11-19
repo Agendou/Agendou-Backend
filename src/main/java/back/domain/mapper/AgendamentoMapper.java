@@ -3,7 +3,9 @@ package back.domain.mapper;
 
 import back.domain.dto.request.AgendamentoRequestDTO;
 import back.domain.dto.response.AgendamentoResponseDTO;
+import back.domain.dto.response.UsuarioResponseDTO;
 import back.domain.model.Agendamento;
+import back.domain.model.Usuario;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -17,7 +19,13 @@ public class AgendamentoMapper {
         return agendamento;
     }
 
-    public AgendamentoResponseDTO toDTO(Agendamento entity) {
+
+    public AgendamentoResponseDTO toAgendamentoResponseDto(Agendamento entity) {
+
+        if (entity == null) {
+            return null;
+        }
+
         AgendamentoResponseDTO dto = new AgendamentoResponseDTO();
 
         dto.setId(entity.getId());

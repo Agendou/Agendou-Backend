@@ -25,6 +25,7 @@ public class EmpresaService {
 
     public ResponseEntity<String> login(String email, String senha){
         System.out.println("Iniciando login para o email: " + email);
+
         Optional<Empresa> optionalEmpresa = repository.findByEmail(email);
         if(optionalEmpresa.isEmpty()){
             return ResponseEntity.status(401).body("Empresa não encontrada.");

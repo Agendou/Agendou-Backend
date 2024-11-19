@@ -1,6 +1,7 @@
 package back.api.controller;
 
 import back.domain.dto.request.AgendamentoRequestDTO;
+import back.domain.dto.response.AgendamentoResponseDTO;
 import back.domain.model.Agendamento;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,8 +29,8 @@ public class AgendamentoController {
             @ApiResponse(responseCode = "400", description = "Entrada inválida")
     })
     @PostMapping()
-    public ResponseEntity<String> marcarHorario(@RequestBody @Valid AgendamentoRequestDTO agendamento) {
-        return service.marcarHorario(agendamento);
+    public ResponseEntity<?> agendar(@RequestBody @Valid AgendamentoRequestDTO agendamento) {
+        return service.agendar(agendamento);
     }
 
     @Operation(summary = "Atualizar agendamento", description = "Atualiza um agendamento existente")
@@ -37,9 +38,9 @@ public class AgendamentoController {
             @ApiResponse(responseCode = "200", description = "Agendamento atualizado com sucesso"),
             @ApiResponse(responseCode = "404", description = "Agendamento não encontrado")
     })
-    @PutMapping("/{id}")
-    public ResponseEntity<String> atualizarAgendamento(@PathVariable Integer id, @RequestBody @Valid AgendamentoRequestDTO agendamento) {
-        return service.atualizarAgendamento(id, agendamento);
+    @PutMapping("/atualizar/{id}")
+    public ResponseEntity<?> atualizarAgendamento(@PathVariable Integer id, @RequestBody @Valid AgendamentoRequestDTO agendamento) {
+        return service.atualizarAgendamento(id,agendamento);
     }
 
     @Operation(summary = "Remover agendamento", description = "Remove um agendamento existente")
@@ -47,8 +48,8 @@ public class AgendamentoController {
             @ApiResponse(responseCode = "200", description = "Agendamento removido com sucesso"),
             @ApiResponse(responseCode = "404", description = "Agendamento não encontrado")
     })
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> removerAgendamento(@PathVariable Integer id) {
+    @DeleteMapping("/deletar/{id}")
+    public ResponseEntity<?> removerAgendamento(@PathVariable Integer id) {
         return service.removerAgendamento(id);
     }
 
@@ -60,9 +61,7 @@ public class AgendamentoController {
             @ApiResponse(responseCode = "400", description = "Erro ao listar agendamentos")
     })
     @GetMapping()
-    public ResponseEntity<List<Agendamento>> listarAgendamentos(
-            @RequestParam(name = "inicio") LocalDateTime inicio,
-            @RequestParam(name = "fim") LocalDateTime fim) {
-        return service.listarAgendamentos(inicio, fim);
+    public ResponseEntity<List<AgendamentoResponseDTO>> listarAgendamentos() {
+        return ResponseEntity.status(200).body(service.listarAgendamentos());
     }
 }
