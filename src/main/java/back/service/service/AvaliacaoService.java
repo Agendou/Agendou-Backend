@@ -67,7 +67,8 @@ public class AvaliacaoService {
 
             avaliacaoResponseDTOs.add(AvaliacaoMapper.toDTO(avaliacao));
         }
-        
+
+
         mergeSort(avaliacaoResponseDTOs, 0, avaliacaoResponseDTOs.size() - 1);
 
         return avaliacaoResponseDTOs;
@@ -91,24 +92,38 @@ public class AvaliacaoService {
             JSONObject submissionJson = submissionsArray.getJSONObject(i);
             JSONObject answers = submissionJson.getJSONObject("answers");
 
+            System.out.println("Respostas da submissão " + (i + 1) + ": " + answers.toString());
+
             for (String key : answers.keySet()) {
                 JSONObject answer = answers.getJSONObject(key);
-                if ("control_star_rating".equals(answer.getString("type"))) {
-                    int starRating = answer.getInt("answer");
-                    totalStars += starRating;
-                    count++;
+
+                if (answer.has("type") && "control_rating".equals(answer.getString("type")) && answer.has("answer")) {
+                    String starString = answer.optString("answer", "0");
+                    System.out.println("Valor da estrela encontrado: " + starString);
+
+                    try {
+                        int starRating = Integer.parseInt(starString);
+                        totalStars += starRating;
+                        count++;
+                    } catch (NumberFormatException e) {
+                        System.err.println("Erro ao converter o valor de estrelas para int: " + starString);
+                    }
+                } else {
+                    System.out.println("Campo ignorado: " + key + " (não é `control_rating` ou sem `answer`)");
                 }
             }
         }
 
-        return count > 0 ? totalStars / count : 0;
+        System.out.println("Total de estrelas: " + totalStars + ", Contagem de avaliações: " + count);
+        return count > 0 ? totalStars / count : -1;
     }
+
+
 
 
     private void mergeSort(List<AvaliacaoResponseDTO> avaliacoes, int left, int right) {
         if (left < right) {
             int middle = (left + right) / 2;
-
 
             mergeSort(avaliacoes, left, middle);
             mergeSort(avaliacoes, middle + 1, right);
