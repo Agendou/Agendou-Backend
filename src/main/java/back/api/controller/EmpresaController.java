@@ -29,7 +29,7 @@ public class EmpresaController {
             @ApiResponse(responseCode = "200", description = "Login realizado com sucesso"),
             @ApiResponse(responseCode = "401", description = "Não autorizado")
     })
-    @GetMapping("/login")
+    @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody @Valid EmpresaRequestDTO empresa) {
         System.out.println("Recebida requisição de login com email: " + empresa.getEmail());
         return service.login(empresa.getEmail(), empresa.getSenha());
