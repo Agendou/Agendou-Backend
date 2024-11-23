@@ -1,19 +1,15 @@
 package back.service.service;
 
-
 import back.domain.dto.request.AgendamentoRequestDTO;
 import back.domain.dto.response.AgendamentoResponseDTO;
 import back.domain.mapper.AgendamentoMapper;
 import back.domain.model.Agendamento;
-import back.domain.model.Usuario;
 import back.domain.repository.AgendamentoRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
