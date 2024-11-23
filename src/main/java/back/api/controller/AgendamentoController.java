@@ -28,6 +28,7 @@ public class AgendamentoController {
     })
     @PostMapping()
     public ResponseEntity<?> agendar(@RequestBody @Valid AgendamentoRequestDTO agendamento) {
+        System.out.println("Recebida requisição de agendamento com data e hora: " + agendamento.getDataHoraCorte() + agendamento.hashCode());
         return service.agendar(agendamento);
     }
 
