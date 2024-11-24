@@ -26,7 +26,7 @@ public class AgendamentoController {
             @ApiResponse(responseCode = "201", description = "Horário marcado com sucesso"),
             @ApiResponse(responseCode = "400", description = "Entrada inválida")
     })
-    @PostMapping()
+    @PostMapping("/cadastrar")
     public ResponseEntity<?> agendar(@RequestBody @Valid AgendamentoRequestDTO agendamento) {
         System.out.println("Recebida requisição de agendamento com data e hora: " + agendamento.getDataHoraCorte() + agendamento.hashCode());
         return service.agendar(agendamento);
@@ -59,7 +59,7 @@ public class AgendamentoController {
                             schema = @Schema(implementation = Agendamento.class))),
             @ApiResponse(responseCode = "400", description = "Erro ao listar agendamentos")
     })
-    @GetMapping()
+    @GetMapping("/listar")
     public ResponseEntity<List<AgendamentoResponseDTO>> listarAgendamentos() {
         return ResponseEntity.status(200).body(service.listarAgendamentos());
     }
