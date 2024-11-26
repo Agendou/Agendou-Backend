@@ -1,5 +1,6 @@
 package back.api.config.security;
 
+import back.domain.model.Empresa;
 import back.domain.model.Usuario;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -19,13 +20,28 @@ public class TokenService {
     @Value("${api.security.secret.token}")
     private String secret;
 
-    public String generateToken(Usuario usuario) {
+    public String  generateTokenUser(Usuario usuario) {
 
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
             String token = JWT.create()
                     .withIssuer("auth-api")
                     .withSubject(usuario.getEmail())
+                    .withExpiresAt(generateExpirationDate())
+                    .sign(algorithm);
+            return token;
+        } catch (JWTCreationException exception) {
+            throw new RuntimeException("Erro ao criar token: ", exception);
+        }
+    }
+
+    public String  generateToken(Empresa empresa) {
+
+        try {
+            Algorithm algorithm = Algorithm.HMAC256(secret);
+            String token = JWT.create()
+                    .withIssuer("auth-api")
+                    .withSubject(empresa.getEmail())
                     .withExpiresAt(generateExpirationDate())
                     .sign(algorithm);
             return token;
