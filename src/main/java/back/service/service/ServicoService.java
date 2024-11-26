@@ -98,33 +98,33 @@ public class ServicoService {
                 .body(responseDTO);
     }
 
-    public byte[] getServicosCsv() throws IOException {
-
-        List<Servico> servicos = repository.findAll();
-        List<ServicoResponseDTO> servicoCsvDtos = servicos.stream()
-                .map(servico -> {
-                    try {
-                        return mapper.toServicoResponseDto(servico);
-                    } catch (Exception e) {
-                        throw new RuntimeException("Erro ao mapear Servico para ServicoRequestDTO", e);
-                    }
-                })
-                .toList();
-
-        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-             OutputStreamWriter writer = new OutputStreamWriter(outputStream)) {
-
-            writer.write("Nome;Descrição;Preço\n");
-
-            for (ServicoResponseDTO dto : servicoCsvDtos) {
-                writer.write(String.format("%s;%s;%.2f\n",
-                        dto.getNome(),
-                        dto.getDescricao(),
-                        dto.getPreco()));
-            }
-
-            writer.flush();
-            return outputStream.toByteArray();
-        }
-    }
+//    public byte[] getServicosCsv() throws IOException {
+//
+//        List<Servico> servicos = repository.findAll();
+//        List<ServicoResponseDTO> servicoCsvDtos = servicos.stream()
+//                .map(servico -> {
+//                    try {
+//                        return mapper.toServicoResponseDto(servico);
+//                    } catch (Exception e) {
+//                        throw new RuntimeException("Erro ao mapear Servico para ServicoRequestDTO", e);
+//                    }
+//                })
+//                .toList();
+//
+//        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+//             OutputStreamWriter writer = new OutputStreamWriter(outputStream)) {
+//
+//            writer.write("Nome;Descrição;Preço\n");
+//
+//            for (ServicoResponseDTO dto : servicoCsvDtos) {
+//                writer.write(String.format("%s;%s;%.2f\n",
+//                        dto.getNome(),
+//                        dto.getDescricao(),
+//                        dto.getPreco()));
+//            }
+//
+//            writer.flush();
+//            return outputStream.toByteArray();
+//        }
+//    }
 }
