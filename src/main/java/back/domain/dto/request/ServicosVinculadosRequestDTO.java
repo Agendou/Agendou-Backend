@@ -1,5 +1,6 @@
 package back.domain.dto.request;
 
+import back.domain.model.Funcionario;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,6 +10,6 @@ import lombok.NoArgsConstructor;
 @Data
 public class ServicosVinculadosRequestDTO {
     private Integer id;
-    private Integer fk_funcionario;
+    private Funcionario fk_funcionario;
     private Integer fk_servico;
 }
