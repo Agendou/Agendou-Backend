@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
@@ -28,6 +30,9 @@ public class Funcionario {
 
     @Column(name = "telefone")
     private String telefone;
+
+    @OneToMany(mappedBy = "funcionario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ServicosVinculados> servicosVinculados;
 
 //    @ManyToOne
 //    @JoinColumn(name = "fk_empresa")

@@ -16,8 +16,10 @@ public class ServicosVinculados {
     @Column(name = "id_servicos_vinculados")
     private Integer id;
 
+    @ManyToOne
+    @JoinColumn(name = "fk_funcionario")
     @Column(name = "fk_funcionario")
-    private Integer fk_funcionario;
+    private Funcionario fk_funcionario;
 
     @Column(name = "fk_servico")
     private Integer fk_servico;
