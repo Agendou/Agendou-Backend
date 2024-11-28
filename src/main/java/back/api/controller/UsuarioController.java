@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.springframework.web.bind.support.SessionStatus;
 
 import java.util.List;
 
@@ -52,7 +53,7 @@ public class UsuarioController {
             @ApiResponse(responseCode = "400", description = "Erro no cadastro")
     })
     @PostMapping("/cadastrar")
-    public ResponseEntity<?> cadastrarUsuario(@RequestBody @Valid UsuarioRequestDTO usuario) {
+    public ResponseEntity<?> cadastrarUsuario(@RequestBody @Valid UsuarioRequestDTO usuario, SessionStatus sessionStatus) {
         return service.cadastrarUsuario(usuario);
     }
 

@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
@@ -32,4 +34,7 @@ public class Funcionario {
 //    @ManyToOne
 //    @JoinColumn(name = "fk_empresa")
 //    private Empresa fk_empresa;
+
+    @ManyToMany(mappedBy = "funcionarios")
+    private List<Servico> servicos;
 }
