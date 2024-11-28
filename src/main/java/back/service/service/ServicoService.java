@@ -25,9 +25,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class ServicoService {
 
-    @Autowired
     private ServicoRepository repository;
-    @Autowired
     private ServicoMapper mapper;
 
     private static final Logger logger = LoggerFactory.getLogger(ServicoService.class);
