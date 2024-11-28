@@ -18,15 +18,12 @@ public class LogConfig {
     public void configureLogback() {
         LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
 
-        // Configura o Appender para INFO
         FileAppender<ILoggingEvent> infoAppender = createFileAppender(context, "Logs/info.log", Level.INFO);
         context.getLogger("ROOT").addAppender(infoAppender);
 
-        // Configura o Appender para WARN
         FileAppender<ILoggingEvent> warnAppender = createFileAppender(context, "Logs/warn.log", Level.WARN);
         context.getLogger("ROOT").addAppender(warnAppender);
 
-        // Configura o Appender para ERROR
         FileAppender<ILoggingEvent> errorAppender = createFileAppender(context, "Logs/error.log", Level.ERROR);
         context.getLogger("ROOT").addAppender(errorAppender);
     }
@@ -36,7 +33,6 @@ public class LogConfig {
         appender.setContext(context);
         appender.setFile(filePath);
 
-        // Configura o formato do log
         PatternLayoutEncoder encoder = new PatternLayoutEncoder();
         encoder.setContext(context);
         encoder.setPattern("%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36} - %msg%n");
@@ -44,7 +40,6 @@ public class LogConfig {
 
         appender.setEncoder(encoder);
 
-        // Adiciona o filtro de nível
         LevelFilter filter = createLevelFilter(level);
         appender.addFilter(filter);
 

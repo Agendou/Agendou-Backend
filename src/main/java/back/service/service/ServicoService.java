@@ -7,6 +7,8 @@ import back.domain.mapper.ServicoMapper;
 import back.domain.model.Servico;
 import back.domain.repository.ServicoRepository;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -26,6 +28,8 @@ public class ServicoService {
     private ServicoRepository repository;
     private ServicoMapper mapper;
 
+    private static final Logger logger = LoggerFactory.getLogger(ServicoService.class);
+
     public List<ServicoResponseDTO> listarServicos() {
         List<Servico> servicos = repository.findAll();
         return servicos.stream()
@@ -37,6 +41,7 @@ public class ServicoService {
         Optional<Servico> optionalServico = repository.findById(id);
 
         if (optionalServico.isEmpty()) {
+            logger.error("Falha ao atualizar o serviço: Serviço não encontrado");
             return ResponseEntity.status(404).body("Serviço não encontrado.");
         }
 
@@ -55,10 +60,12 @@ public class ServicoService {
         Optional<Servico> servicoExistente = repository.findById(id);
 
         if (servicoExistente.isEmpty()){
+            logger.error("Falha ao deletar o serviço: Serviço não encontrado");
             return ResponseEntity.status(404).body("Serviço não encontrado.");
         }
 
         Servico servico = servicoExistente.get();
+        logger.info("Serviço deletado com sucesso: " + servico.getNome());
         repository.delete(servico);
 
         return ResponseEntity.status(200).body(servico);
@@ -78,6 +85,13 @@ public class ServicoService {
         Servico servicoSalvo = repository.save(servico);
 
         ServicoResponseDTO responseDTO = mapper.toServicoResponseDto(servicoSalvo);
+
+        if (responseDTO == null) {
+            logger.error("Falha ao cadastrar o serviço: O serviço está vazio");
+            return ResponseEntity.status(400).build();
+        }
+
+        logger.info("Serviço cadastrado com sucesso: " + responseDTO.getNome());
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
