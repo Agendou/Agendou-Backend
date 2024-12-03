@@ -16,13 +16,13 @@ public class Agendamento {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "id_agendamento")
     private Integer id;
 
     @Column(name = "profissional")
     private String profissional;
 
-    @Column(name = "dataHoraCorte")
+    @Column(name = "data")
     private LocalDateTime dataHoraCorte;
 
 }

@@ -6,6 +6,8 @@ import back.domain.mapper.FuncionarioMapper;
 import back.domain.model.Funcionario;
 import back.domain.repository.FuncionarioRepository;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -21,17 +23,23 @@ public class FuncionarioService {
 
     private final FuncionarioRepository repository;
     private final FuncionarioMapper mapper;
+    private static final Logger logger = LoggerFactory.getLogger(UsuarioService.class);
 
     public ResponseEntity<String> login(String email, String senha){
         System.out.println("Iniciando login para o email: " + email);
+
         Optional<Funcionario> optionalFuncionario = repository.findByEmail(email);
+
         if(optionalFuncionario.isEmpty()){
-            return ResponseEntity.status(401).body("Usuário não encontrado.");
+            logger.error("Falha na autenticação do funcionario: O funcionario está vazio ou não existe");
+            return ResponseEntity.status(401).body("Funcionario não encontrado.");
         }
+
         Funcionario funcionarioEntity = optionalFuncionario.get();
         FuncionarioResponseDTO funcionarioResponse = mapper.toFuncionarioResponseDto(funcionarioEntity);
 
         if (!funcionarioResponse.getSenha().equals(senha)) {
+            logger.error("Falha na autenticação da senha: A senha está vazia ou incorreta");
             return ResponseEntity.status(401).body("Senha incorreta.");
         }
 
@@ -42,6 +50,7 @@ public class FuncionarioService {
     public ResponseEntity<?> cadastrarFuncionario(FuncionarioRequestDTO dto){
 
         if(repository.existsByEmail(dto.getEmail())){
+            logger.warn("Email ja cadastrado" + dto.getEmail());
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Email ja cadastrado");
         }
 
@@ -53,6 +62,8 @@ public class FuncionarioService {
         Funcionario funcionarioSalvo = repository.save(funcionario);
 
         FuncionarioResponseDTO responseDTO = mapper.toFuncionarioResponseDto(funcionarioSalvo);
+
+        logger.info("Funcionario cadastrado com sucesso: " + responseDTO.getEmail());
         System.out.println("usuario: " + responseDTO);
 
         return ResponseEntity
@@ -73,6 +84,7 @@ public class FuncionarioService {
         Optional<Funcionario> funcionarioExistente = repository.findById(id);
 
         if (funcionarioExistente.isEmpty()) {
+            logger.error("Falha ao atualizar o funcionario: Funcionario não encontrado");
             return ResponseEntity.status(404).body("Usuário não encontrado.");
         }
 
@@ -92,10 +104,12 @@ public class FuncionarioService {
         Optional<Funcionario> funcionarioExistente = repository.findById(id);
 
         if (funcionarioExistente.isEmpty()) {
+            logger.error("Falha ao deletar o funcionario: Funcionario não encontrado");
             return ResponseEntity.status(404).body("Usuário não encontrado.");
         }
 
         Funcionario funcionario = funcionarioExistente.get();
+        logger.info("Funcionario deletado com sucesso: " + funcionario.getEmail());
         repository.delete(funcionario);
 
         return ResponseEntity.status(200).body(funcionario);

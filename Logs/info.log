@@ -1,0 +1,92 @@
+2024-12-01 14:36:20 INFO  [main] o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name authService
+2024-12-01 14:36:21 INFO  [main] o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2024-12-01 14:36:21 INFO  [main] back.SpringBackendApplication - Started SpringBackendApplication in 6.801 seconds (process running for 7.398)
+2024-12-01 14:37:44 INFO  [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-12-01 14:37:44 INFO  [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2024-12-01 14:37:44 INFO  [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet - Completed initialization in 2 ms
+2024-12-01 14:37:54 INFO  [SpringApplicationShutdownHook] o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-12-01 14:37:54 INFO  [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2024-12-01 14:37:54 INFO  [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2024-12-02 17:47:43 INFO  [main] o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name authService
+2024-12-02 17:47:44 INFO  [main] o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2024-12-02 17:47:44 INFO  [main] back.SpringBackendApplication - Started SpringBackendApplication in 6.804 seconds (process running for 7.475)
+2024-12-02 17:48:00 INFO  [http-nio-8080-exec-6] o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-12-02 17:48:00 INFO  [http-nio-8080-exec-6] o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2024-12-02 17:48:00 INFO  [http-nio-8080-exec-6] o.s.web.servlet.DispatcherServlet - Completed initialization in 0 ms
+2024-12-02 17:55:47 INFO  [http-nio-8080-exec-1] back.service.service.EmpresaService - Empresa cadastrada com sucesso: mel@gmail.com
+2024-12-02 18:59:17 INFO  [http-nio-8080-exec-9] back.service.service.UsuarioService - Usuário cadastrado com sucesso: melissa@gmail.com
+2024-12-02 18:59:44 INFO  [SpringApplicationShutdownHook] o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-12-02 18:59:44 INFO  [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2024-12-02 18:59:44 INFO  [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2024-12-02 18:59:56 INFO  [main] o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name authService
+2024-12-02 18:59:56 INFO  [main] o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2024-12-02 18:59:56 INFO  [main] back.SpringBackendApplication - Started SpringBackendApplication in 7.411 seconds (process running for 8.234)
+2024-12-02 19:00:20 INFO  [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-12-02 19:00:20 INFO  [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2024-12-02 19:00:20 INFO  [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet - Completed initialization in 0 ms
+2024-12-02 19:00:21 INFO  [http-nio-8080-exec-1] back.service.service.UsuarioService - Usuário cadastrado com sucesso: melissa@gmail.com
+2024-12-02 19:18:31 INFO  [http-nio-8080-exec-9] back.service.service.EmpresaService - Empresa cadastrada com sucesso: melissa@gmail.com
+2024-12-02 19:39:48 INFO  [SpringApplicationShutdownHook] o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-12-02 19:39:48 INFO  [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2024-12-02 19:39:48 INFO  [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2024-12-02 19:39:58 INFO  [main] o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name authService
+2024-12-02 19:39:59 INFO  [main] o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2024-12-02 19:39:59 INFO  [main] back.SpringBackendApplication - Started SpringBackendApplication in 7.224 seconds (process running for 8.469)
+2024-12-02 19:40:11 INFO  [http-nio-8080-exec-3] o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-12-02 19:40:11 INFO  [http-nio-8080-exec-3] o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2024-12-02 19:40:11 INFO  [http-nio-8080-exec-3] o.s.web.servlet.DispatcherServlet - Completed initialization in 2 ms
+2024-12-02 19:45:26 INFO  [http-nio-8080-exec-8] back.service.service.EmpresaService - Empresa cadastrada com sucesso: melissa.reis@gmail.com
+2024-12-02 19:45:26 INFO  [http-nio-8080-exec-10] back.service.service.EmpresaService - Empresa cadastrada com sucesso: melissa.reis@gmail.com
+2024-12-02 19:45:26 INFO  [http-nio-8080-exec-9] back.service.service.EmpresaService - Empresa cadastrada com sucesso: melissa.reis@gmail.com
+2024-12-02 19:45:26 INFO  [http-nio-8080-exec-6] back.service.service.EmpresaService - Empresa cadastrada com sucesso: melissa.reis@gmail.com
+2024-12-02 20:05:26 INFO  [http-nio-8080-exec-3] back.service.service.ServicoService - Serviço cadastrado com sucesso: Descoloração
+2024-12-03 13:16:45 INFO  [SpringApplicationShutdownHook] o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-12-03 13:16:45 INFO  [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2024-12-03 13:16:46 INFO  [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2024-12-03 19:18:21 INFO  [main] o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name authService
+2024-12-03 19:18:22 INFO  [main] o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2024-12-03 19:18:22 INFO  [main] back.SpringBackendApplication - Started SpringBackendApplication in 20.345 seconds (process running for 21.657)
+2024-12-03 19:18:54 INFO  [http-nio-8080-exec-5] o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-12-03 19:18:54 INFO  [http-nio-8080-exec-5] o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2024-12-03 19:18:54 INFO  [http-nio-8080-exec-5] o.s.web.servlet.DispatcherServlet - Completed initialization in 2 ms
+2024-12-03 19:20:08 INFO  [http-nio-8080-exec-10] back.service.service.EmpresaService - Empresa cadastrada com sucesso: lua@example.com
+2024-12-03 19:35:35 INFO  [http-nio-8080-exec-8] back.service.service.UsuarioService - Funcionario cadastrado com sucesso: matheus@example.com
+2024-12-03 19:47:32 INFO  [SpringApplicationShutdownHook] o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-12-03 19:47:32 INFO  [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2024-12-03 19:47:32 INFO  [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2024-12-03 19:57:51 INFO  [main] o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name authService
+2024-12-03 19:57:52 INFO  [main] o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2024-12-03 19:57:52 INFO  [main] back.SpringBackendApplication - Started SpringBackendApplication in 97.07 seconds (process running for 97.756)
+2024-12-03 20:10:01 INFO  [http-nio-8080-exec-3] o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-12-03 20:10:01 INFO  [http-nio-8080-exec-3] o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2024-12-03 20:10:01 INFO  [http-nio-8080-exec-3] o.s.web.servlet.DispatcherServlet - Completed initialization in 1 ms
+2024-12-03 20:10:02 INFO  [http-nio-8080-exec-6] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2024-12-03 20:10:32 INFO  [http-nio-8080-exec-7] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2024-12-03 20:11:02 INFO  [http-nio-8080-exec-9] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2024-12-03 20:11:32 INFO  [http-nio-8080-exec-4] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2024-12-03 20:16:21 INFO  [http-nio-8080-exec-5] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2024-12-03 20:16:26 INFO  [main] o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name authService
+2024-12-03 20:16:26 INFO  [main] o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-12-03 20:16:26 INFO  [main] o.s.b.a.l.ConditionEvaluationReportLogger - 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2024-12-03 20:16:51 INFO  [http-nio-8080-exec-6] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2024-12-03 20:17:22 INFO  [http-nio-8080-exec-8] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2024-12-03 20:17:52 INFO  [http-nio-8080-exec-9] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2024-12-03 20:18:22 INFO  [http-nio-8080-exec-7] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2024-12-03 20:18:52 INFO  [http-nio-8080-exec-5] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2024-12-03 20:19:46 INFO  [main] o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name authService
+2024-12-03 20:19:46 INFO  [main] o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-12-03 20:19:46 INFO  [main] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2024-12-03 20:19:46 INFO  [main] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2024-12-03 20:19:46 INFO  [main] o.s.b.a.l.ConditionEvaluationReportLogger - 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2024-12-03 20:21:07 INFO  [main] o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name authService
+2024-12-03 20:21:08 INFO  [main] o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-12-03 20:21:08 INFO  [main] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2024-12-03 20:21:08 INFO  [main] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2024-12-03 20:21:08 INFO  [main] o.s.b.a.l.ConditionEvaluationReportLogger - 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2024-12-03 20:21:17 INFO  [SpringApplicationShutdownHook] o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'

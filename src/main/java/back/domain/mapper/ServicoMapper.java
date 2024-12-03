@@ -28,6 +28,7 @@ public class ServicoMapper {
         }
 
         ServicoResponseDTO responseDTO = new ServicoResponseDTO();
+        responseDTO.setId(servico.getId());
         responseDTO.setNome(servico.getNome());
         responseDTO.setDescricao(servico.getDescricao());
         responseDTO.setPreco(servico.getPreco());

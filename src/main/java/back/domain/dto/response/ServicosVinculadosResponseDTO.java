@@ -1,3 +1,4 @@
+
 package back.domain.dto.response;
 
 import back.domain.model.Funcionario;

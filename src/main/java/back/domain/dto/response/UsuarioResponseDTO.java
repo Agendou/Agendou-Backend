@@ -16,4 +16,5 @@ public class UsuarioResponseDTO {
     private String senha;
     private String telefone;
     private UsuarioRole role;
+    private String token;
 }

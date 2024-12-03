@@ -1,5 +1,6 @@
 package back.domain.dto.response;
 
+import back.domain.enums.EmpresaRole;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,4 +17,5 @@ public class EmpresaResponseDTO {
     private String senha;
     private String telefone;
     private String cnpj;
+    private EmpresaRole role;
 }

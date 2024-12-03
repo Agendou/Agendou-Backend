@@ -3,13 +3,17 @@ package back.service.service;
 import back.api.config.security.TokenService;
 import back.domain.dto.request.UsuarioRequestDTO;
 import back.domain.dto.response.LoginResponseDTO;
+import back.domain.dto.response.LoginUserResponseDTO;
 import back.domain.dto.response.UsuarioResponseDTO;
 import back.domain.mapper.UsuarioMapper;
 import back.domain.model.Usuario;
 import back.domain.repository.UsuarioRepository;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -28,23 +32,27 @@ public class UsuarioService {
     private TokenService tokenService;
     private PasswordEncoder passwordEncoder;
 
+    private static final Logger logger = LoggerFactory.getLogger(UsuarioService.class);
+
 
     public ResponseEntity<?> login(String email, String senha){
         System.out.println("Iniciando login para o email: " + email);
 
         Optional<Usuario> optionalUsuario = usuarioRepository.findByEmail(email);
-        var token = tokenService.generateToken(optionalUsuario.get());
+        var token = tokenService.generateTokenUser(optionalUsuario.get());
         System.out.println("Token: " + token);
 
         if(optionalUsuario.isEmpty()){
+            logger.error("Falha na autenticação do usuário: O usuário está vazio ou não existe");
             return ResponseEntity.status(401).build();
         }
 
         Usuario usuarioEntity = optionalUsuario.get();
         UsuarioResponseDTO usuarioResponse = mapper.toUsuarioResponseDto(usuarioEntity);
-        LoginResponseDTO loginDTO = new LoginResponseDTO(usuarioResponse, token);
+        LoginUserResponseDTO loginDTO = new LoginUserResponseDTO(usuarioResponse, token);
 
         if (!passwordEncoder.matches(senha,usuarioEntity.getPassword())) {
+            logger.error("Falha na autenticação da senha: A senha está vazia ou incorreta");
             return ResponseEntity.status(401).build();
         }
 
@@ -69,6 +77,14 @@ public class UsuarioService {
         Usuario usuarioSalvo = repository.save(usuario);
 
         UsuarioResponseDTO responseDTO = mapper.toUsuarioResponseDto(usuarioSalvo);
+
+        if (responseDTO == null) {
+            logger.error("Falha ao cadastrar o usuário: O usuário está vazio");
+            return ResponseEntity.status(400).build();
+        }
+
+        logger.info("Usuário cadastrado com sucesso: " + responseDTO.getEmail());
+
         System.out.println("usuario: " + responseDTO);
 
         return ResponseEntity
@@ -89,6 +105,7 @@ public class UsuarioService {
         Optional<Usuario> usuarioExistente = repository.findById(id);
 
         if (usuarioExistente.isEmpty()) {
+            logger.error("Falha ao atualizar o usuário: Usuário não encontrado");
             return ResponseEntity.status(404).body("Usuário não encontrado.");
         }
 
@@ -108,10 +125,12 @@ public class UsuarioService {
         Optional<Usuario> usuarioExistente = repository.findById(id);
 
         if (usuarioExistente.isEmpty()) {
+            logger.error("Falha ao deletar o usuário: Usuário não encontrado");
             return ResponseEntity.status(404).body("Usuário não encontrado.");
         }
 
         Usuario usuario = usuarioExistente.get();
+        logger.info("Usuário deletado com sucesso: " + usuario.getEmail());
         repository.delete(usuario);
 
         return ResponseEntity.status(200).body(usuario);

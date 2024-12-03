@@ -37,7 +37,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/empresas/cadastrar").permitAll()
                         .requestMatchers(HttpMethod.POST, "/empresas/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/swagger-ui/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "agendamentos").authenticated()
+
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/favicon.ico").permitAll()
                         .requestMatchers(HttpMethod.GET, "/v3/**").permitAll()
