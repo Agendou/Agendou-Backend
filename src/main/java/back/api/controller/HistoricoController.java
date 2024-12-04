@@ -7,11 +7,16 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -53,5 +58,23 @@ public class HistoricoController {
     public ResponseEntity<List<HistoricoResponseDTO>> obterTodoHistorico() {
         List<HistoricoResponseDTO> historico = service.obterTodoHistorico();
         return ResponseEntity.ok(historico);
+    }
+
+    @GetMapping("/csv")
+    public ResponseEntity<String> downloadCsv() {
+        try {
+            byte[] csvContent = service.getHistoricoCsv();
+
+            Path filePath = Paths.get("src/main/resources/historico.csv");
+
+            Files.createDirectories(filePath.getParent());
+            Files.write(filePath, csvContent);
+
+            return ResponseEntity.ok("Arquivo CSV salvo com sucesso em: " + filePath.toString());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().body("Erro ao salvar o arquivo CSV.");
+        }
     }
 }

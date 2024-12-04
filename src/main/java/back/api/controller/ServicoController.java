@@ -73,21 +73,21 @@ public class ServicoController {
         return service.deletarServico(id);
     }
 
-    @GetMapping("/csv")
-    public ResponseEntity<String> downloadCsv() {
-        try {
-            byte[] csvContent = service.getServicosCsv();
-
-            Path filePath = Paths.get("src/main/resources/servicos.csv");
-
-            Files.createDirectories(filePath.getParent());
-            Files.write(filePath, csvContent);
-
-            return ResponseEntity.ok("Arquivo CSV salvo com sucesso em: " + filePath.toString());
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            return ResponseEntity.internalServerError().body("Erro ao salvar o arquivo CSV.");
-        }
-    }
+//    @GetMapping("/csv")
+//    public ResponseEntity<String> downloadCsv() {
+//        try {
+//            byte[] csvContent = service.getServicosCsv();
+//
+//            Path filePath = Paths.get("src/main/resources/servicos.csv");
+//
+//            Files.createDirectories(filePath.getParent());
+//            Files.write(filePath, csvContent);
+//
+//            return ResponseEntity.ok("Arquivo CSV salvo com sucesso em: " + filePath.toString());
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            return ResponseEntity.internalServerError().body("Erro ao salvar o arquivo CSV.");
+//        }
+//    }
 }
