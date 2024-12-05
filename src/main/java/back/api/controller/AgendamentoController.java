@@ -1,6 +1,8 @@
 package back.api.controller;
 
 import back.domain.dto.request.AgendamentoRequestDTO;
+import back.domain.dto.response.AgendamentoResponseDTO;
+import back.domain.dto.response.AgendamentoSimplesResponseDTO;
 import back.domain.model.Agendamento;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +14,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -27,9 +27,21 @@ public class AgendamentoController {
             @ApiResponse(responseCode = "201", description = "Horário marcado com sucesso"),
             @ApiResponse(responseCode = "400", description = "Entrada inválida")
     })
-    @PostMapping()
-    public ResponseEntity<String> marcarHorario(@RequestBody @Valid AgendamentoRequestDTO agendamento) {
-        return service.marcarHorario(agendamento);
+    @PostMapping("/cadastrar")
+    public ResponseEntity<?> agendar(@RequestBody @Valid AgendamentoRequestDTO agendamento) {
+        System.out.println("Recebida requisição de agendamento com data e hora: " + agendamento.getData() + agendamento.hashCode());
+        return service.agendar(agendamento);
+    }
+
+    @Operation(summary = "Listar agendamentos do usuário", description = "Lista todos os agendamentos de um usuário específico")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Agendamentos listados com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
+    })
+    @GetMapping("/{usuarioId}")
+    public ResponseEntity<List<AgendamentoResponseDTO>> listarAgendamentosPorUsuario(@PathVariable Integer usuarioId) {
+        List<AgendamentoResponseDTO> agendamentos = service.listarAgendamentosPorFuncionario(usuarioId);
+        return ResponseEntity.ok(agendamentos);
     }
 
     @Operation(summary = "Atualizar agendamento", description = "Atualiza um agendamento existente")
@@ -37,9 +49,9 @@ public class AgendamentoController {
             @ApiResponse(responseCode = "200", description = "Agendamento atualizado com sucesso"),
             @ApiResponse(responseCode = "404", description = "Agendamento não encontrado")
     })
-    @PutMapping("/{id}")
-    public ResponseEntity<String> atualizarAgendamento(@PathVariable Integer id, @RequestBody @Valid AgendamentoRequestDTO agendamento) {
-        return service.atualizarAgendamento(id, agendamento);
+    @PutMapping("/atualizar/{id}")
+    public ResponseEntity<?> atualizarAgendamento(@PathVariable Integer id, @RequestBody @Valid AgendamentoRequestDTO agendamento) {
+        return service.atualizarAgendamento(id,agendamento);
     }
 
     @Operation(summary = "Remover agendamento", description = "Remove um agendamento existente")
@@ -47,8 +59,8 @@ public class AgendamentoController {
             @ApiResponse(responseCode = "200", description = "Agendamento removido com sucesso"),
             @ApiResponse(responseCode = "404", description = "Agendamento não encontrado")
     })
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> removerAgendamento(@PathVariable Integer id) {
+    @DeleteMapping("/deletar/{id}")
+    public ResponseEntity<?> removerAgendamento(@PathVariable Integer id) {
         return service.removerAgendamento(id);
     }
 
@@ -59,10 +71,21 @@ public class AgendamentoController {
                             schema = @Schema(implementation = Agendamento.class))),
             @ApiResponse(responseCode = "400", description = "Erro ao listar agendamentos")
     })
-    @GetMapping()
-    public ResponseEntity<List<Agendamento>> listarAgendamentos(
-            @RequestParam(name = "inicio") LocalDateTime inicio,
-            @RequestParam(name = "fim") LocalDateTime fim) {
-        return service.listarAgendamentos(inicio, fim);
+    @GetMapping("/listar")
+    public ResponseEntity<List<AgendamentoResponseDTO>> listarAgendamentos() {
+        return ResponseEntity.status(200).body(service.listarAgendamentos());
     }
+
+    @Operation(summary = "Listar agendamentos simples", description = "Lista todos os agendamentos com nome do cliente e a data")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Agendamentos listados com sucesso",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Agendamento.class))),
+            @ApiResponse(responseCode = "400", description = "Erro ao listar agendamentos")
+    })
+    @GetMapping("/listar-simples")
+    public ResponseEntity<List<AgendamentoSimplesResponseDTO>> listarAgendamentosSimples() {
+        return ResponseEntity.status(200).body(service.listarAgendamentosSimples());
+    }
+
 }
