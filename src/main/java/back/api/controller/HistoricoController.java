@@ -6,8 +6,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -33,7 +33,9 @@ public class HistoricoController {
             @ApiResponse(responseCode = "400", description = "Erro ao obter histórico")
     })
     @GetMapping("/por-periodo")
-    public ResponseEntity<List<HistoricoResponseDTO>> obterHistoricoPorPeriodo(@RequestParam("dataInicio") LocalDateTime dataInicio, @RequestParam("dataFim") LocalDateTime dataFim) {
+    public ResponseEntity<List<HistoricoResponseDTO>> obterHistoricoPorPeriodo(
+            @RequestParam("dataInicio") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dataInicio,
+            @RequestParam("dataFim") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dataFim) {
         List<HistoricoResponseDTO> historico = service.obterHistoricoPorPeriodo(dataInicio, dataFim);
         return ResponseEntity.ok(historico);
     }
@@ -61,9 +63,14 @@ public class HistoricoController {
     }
 
     @GetMapping("/csv")
-    public ResponseEntity<String> downloadCsv() {
+    public ResponseEntity<String> downloadCsv(@RequestParam("dataInicio") LocalDateTime dataInicio, @RequestParam("dataFim") LocalDateTime dataFim) {
+
+        if (dataInicio.isAfter(dataFim)) {
+            return ResponseEntity.badRequest().body("A data de início não pode ser posterior à data de fim.");
+        }
+
         try {
-            byte[] csvContent = service.getHistoricoCsv();
+            byte[] csvContent = service.getHistoricoCsv(dataInicio, dataFim);
 
             Path filePath = Paths.get("src/main/resources/historico.csv");
 
