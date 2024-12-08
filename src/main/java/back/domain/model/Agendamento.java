@@ -1,3 +1,5 @@
+
+
 package back.domain.model;
 
 import jakarta.persistence.*;
@@ -38,4 +40,8 @@ public class Agendamento {
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "fk_avaliacao")
     private Avaliacao fkAvaliacao;
+
+    public Agendamento(Integer id) {
+        this.id = id;
+    }
 }
