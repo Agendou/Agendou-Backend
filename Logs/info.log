@@ -1,0 +1,4 @@
+2025-02-04 20:03:55 INFO  [main] o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name authService
+2025-02-04 20:03:56 INFO  [main] o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2025-02-04 20:03:56 INFO  [main] back.SpringBackendApplication - Started SpringBackendApplication in 70.538 seconds (process running for 71.748)
+2025-02-04 20:08:05 INFO  [SpringApplicationShutdownHook] o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'

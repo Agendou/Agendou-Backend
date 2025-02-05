@@ -8,16 +8,14 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 public class HistoricoRequestDTO {
 
     private LocalDateTime data;
     private Integer idAgendamento;
     private String statusAnterior;
     private String statusAtual;
-    private AgendamentoSimplificadoResponseDTO agendamento;
-
-    public HistoricoRequestDTO(Integer id, String statusAnterior, String statusAtual) {
-    }
+    private Integer fkFuncionario;
+    private Integer fkEmpresa;
+    private Integer fkUsuario;
+    private Integer fkAgendamento;
 }

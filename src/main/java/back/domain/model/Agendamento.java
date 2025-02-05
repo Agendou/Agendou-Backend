@@ -35,10 +35,7 @@ public class Agendamento {
     @JoinColumn(name = "fk_servico")
     private Servico fkServico;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "fk_avaliacao")
-    private Avaliacao fkAvaliacao;
-
-    public Agendamento(Integer id) {
-    }
+    @ManyToOne
+    @JoinColumn(name = "fk_empresa")
+    private Empresa fkEmpresa;
 }

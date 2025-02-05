@@ -1,7 +1,6 @@
 package back.domain.mapper;
 
 import back.domain.dto.response.NotificacaoResponseDTO;
-import back.domain.model.Notificacao;
 import org.springframework.stereotype.Component;
 
 @Component

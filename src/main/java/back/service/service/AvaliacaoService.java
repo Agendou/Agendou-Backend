@@ -1,9 +1,7 @@
 package back.service.service;
 
-import back.domain.dto.request.AvaliacaoRequestDTO;
 import back.domain.dto.response.AvaliacaoResponseDTO;
 import back.domain.mapper.AvaliacaoMapper;
-import back.domain.model.Avaliacao;
 import back.domain.repository.AvaliacaoRepository;
 import org.json.JSONArray;
 import org.json.JSONObject;

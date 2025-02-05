@@ -8,8 +8,6 @@ import org.springframework.cglib.core.Local;
 
 import java.time.LocalDateTime;
 
-@AllArgsConstructor
-@NoArgsConstructor
 @Data
 public class UsuarioRequestDTO {
 

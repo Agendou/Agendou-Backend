@@ -1,6 +1,5 @@
 package back.api.controller;
 
-import back.domain.dto.request.AvaliacaoRequestDTO;
 import back.domain.dto.response.AvaliacaoResponseDTO;
 import back.service.service.AvaliacaoService;
 import io.swagger.v3.oas.annotations.Operation;

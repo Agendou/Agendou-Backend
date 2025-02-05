@@ -46,7 +46,6 @@ public class Empresa implements UserDetails {
     @Column(name = "role")
     private EmpresaRole role;
 
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         if (this.role == EmpresaRole.ADMIN) return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
@@ -80,5 +79,4 @@ public class Empresa implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
-
 }

@@ -1,7 +1,6 @@
 package back.domain.mapper;
 
 import back.domain.dto.response.AvaliacaoResponseDTO;
-import back.domain.model.Avaliacao;
 import org.springframework.stereotype.Component;
 
 @Component
