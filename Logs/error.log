@@ -1,0 +1,13 @@
+2025-04-26 18:09:01 ERROR [http-nio-8080-exec-1] o.h.e.jdbc.spi.SqlExceptionHelper - Falha na conexão TCP/IP com o host servidor-orderhub.database.windows.net, porta 1433. Erro: "servidor-orderhub.database.windows.net. Verifique as propriedades da conexão. Verifique se uma instância do SQL Server está sendo executada no host e se está aceitando conexões TCP/IP na porta. Verifique se as conexões TCP na porta não foram bloqueadas por um firewall.".
+2025-04-26 18:09:32 ERROR [http-nio-8080-exec-4] o.h.e.jdbc.spi.SqlExceptionHelper - Falha na conexão TCP/IP com o host servidor-orderhub.database.windows.net, porta 1433. Erro: "servidor-orderhub.database.windows.net. Verifique as propriedades da conexão. Verifique se uma instância do SQL Server está sendo executada no host e se está aceitando conexões TCP/IP na porta. Verifique se as conexões TCP na porta não foram bloqueadas por um firewall.".
+2025-04-26 18:10:03 ERROR [http-nio-8080-exec-2] o.h.e.jdbc.spi.SqlExceptionHelper - Falha na conexão TCP/IP com o host servidor-orderhub.database.windows.net, porta 1433. Erro: "servidor-orderhub.database.windows.net. Verifique as propriedades da conexão. Verifique se uma instância do SQL Server está sendo executada no host e se está aceitando conexões TCP/IP na porta. Verifique se as conexões TCP na porta não foram bloqueadas por um firewall.".
+2025-04-26 18:13:00 ERROR [http-nio-8080-exec-2] o.h.e.jdbc.spi.SqlExceptionHelper - Table "EMPRESA" not found (this database is empty); SQL statement:
+select top (?) e1_0.id_empresa from empresa e1_0 where e1_0.email=? [42104-224]
+2025-04-26 18:17:01 ERROR [http-nio-8080-exec-1] o.h.e.jdbc.spi.SqlExceptionHelper - Table "EMPRESA" not found (this database is empty); SQL statement:
+select top (?) e1_0.id_empresa from empresa e1_0 where e1_0.email=? [42104-224]
+2025-04-26 18:17:35 ERROR [http-nio-8080-exec-8] o.h.e.jdbc.spi.SqlExceptionHelper - Table "EMPRESA" not found (this database is empty); SQL statement:
+select top (?) e1_0.id_empresa from empresa e1_0 where e1_0.email=? [42104-224]
+2025-04-26 18:18:20 ERROR [http-nio-8080-exec-1] o.h.e.jdbc.spi.SqlExceptionHelper - Table "EMPRESA" not found (this database is empty); SQL statement:
+select e1_0.id_empresa from empresa e1_0 where e1_0.email=? fetch first ? rows only [42104-224]
+2025-04-26 18:46:12 ERROR [http-nio-8080-exec-2] o.h.e.jdbc.spi.SqlExceptionHelper - Table "EMPRESA" not found (this database is empty); SQL statement:
+select e1_0.id_empresa from empresa e1_0 where e1_0.email=? fetch first ? rows only [42104-224]
