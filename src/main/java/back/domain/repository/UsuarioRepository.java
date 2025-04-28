@@ -19,7 +19,4 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
 
     Optional<Usuario> findById(Integer id);
 
-    @Query("SELECT COUNT(u) FROM Usuario u WHERE u.dataCadastro >= :inicioMes")
-    long countNewUsersThisMonth(@Param("inicioMes") LocalDateTime inicioMes);
-
 }

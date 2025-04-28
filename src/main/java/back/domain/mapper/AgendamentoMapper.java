@@ -20,11 +20,6 @@ public class AgendamentoMapper {
         agendamento.setId(agendamentoRequestDTO.getId());
         agendamento.setData(agendamentoRequestDTO.getData());
 
-        if (agendamentoRequestDTO.getFkFuncionario() != null) {
-            Funcionario funcionario = new Funcionario();
-            funcionario.setId(agendamentoRequestDTO.getFkFuncionario());
-            agendamento.setFkFuncionario(funcionario);
-        }
 
         if (agendamentoRequestDTO.getFkUsuario() != null) {
             Usuario usuario = new Usuario();
@@ -64,10 +59,8 @@ public class AgendamentoMapper {
 
         dto.setId(entity.getId());
         dto.setData(entity.getData());
-        dto.setFkFuncionario(entity.getFkFuncionario());
         dto.setFkUsuario(entity.getFkUsuario());
         dto.setFkServico(entity.getFkServico());
-        dto.setFkAvaliacao(entity.getFkAvaliacao());
 
         return dto;
     }

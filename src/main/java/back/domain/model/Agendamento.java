@@ -24,20 +24,12 @@ public class Agendamento {
     private LocalDateTime data;
 
     @ManyToOne
-    @JoinColumn(name = "fk_funcionario")
-    private Funcionario fkFuncionario;
-
-    @ManyToOne
     @JoinColumn(name = "fk_usuario")
     private Usuario fkUsuario;
 
     @ManyToOne
     @JoinColumn(name = "fk_servico")
     private Servico fkServico;
-
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "fk_avaliacao")
-    private Avaliacao fkAvaliacao;
 
     public Agendamento(Integer id) {
     }

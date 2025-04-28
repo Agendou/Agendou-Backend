@@ -77,7 +77,6 @@ public class UsuarioService {
         usuario.setEmail(dto.getEmail());
         usuario.setTelefone(dto.getTelefone());
         usuario.setRole(dto.getRole());
-        usuario.setDataCadastro(LocalDateTime.now());
 
         Usuario usuarioSalvo = repository.save(usuario);
 
@@ -151,10 +150,4 @@ public class UsuarioService {
 
         return ResponseEntity.status(200).body(usuario);
     }
-
-    public long contarNovosUsuariosDoMes() {
-        LocalDateTime inicioMes = LocalDateTime.now().withDayOfMonth(1).toLocalDate().atStartOfDay();
-        return repository.countNewUsersThisMonth(inicioMes);
-    }
-
 }

@@ -38,17 +38,6 @@ public class AgendamentoController {
         return service.agendar(agendamento);
     }
 
-    @Operation(summary = "Listar agendamentos do usuário", description = "Lista todos os agendamentos de um usuário específico")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Agendamentos listados com sucesso"),
-            @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
-    })
-    @GetMapping("/{usuarioId}")
-    public ResponseEntity<List<AgendamentoResponseDTO>> listarAgendamentosPorUsuario(@PathVariable Integer usuarioId) {
-        List<AgendamentoResponseDTO> agendamentos = service.listarAgendamentosPorFuncionario(usuarioId);
-        return ResponseEntity.ok(agendamentos);
-    }
-
     @Operation(summary = "Atualizar agendamento", description = "Atualiza um agendamento existente")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Agendamento atualizado com sucesso"),
@@ -118,12 +107,6 @@ public class AgendamentoController {
     public ResponseEntity<List<AgendamentoResponseDTO>> listarAgendamentosPorMesAtualOuUltimo() {
         List<AgendamentoResponseDTO> agendamentos = service.listarAgendamentosPorMesAtualOuUltimo();
         return ResponseEntity.ok(agendamentos);
-    }
-
-    @GetMapping("/funcionarios-mais-requisitados")
-    public ResponseEntity<List<Map<String, Object>>> getFuncionariosMaisRequisitados() {
-        List<Map<String, Object>> funcionarios = service.getFuncionariosMaisRequisitados();
-        return ResponseEntity.ok(funcionarios);
     }
 
     @GetMapping("/servicos-mais-requisitados")

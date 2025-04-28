@@ -31,7 +31,6 @@ public class AgendamentoService {
     private final AgendamentoRepository repository;
     private final AgendamentoMapper mapper;
     private final ServicoRepository servicoRepository;
-    private final FuncionarioRepository funcionarioRepository;
     private final HistoricoService historicoService;
     private final UsuarioRepository usuarioRepository;
 
@@ -59,9 +58,6 @@ public class AgendamentoService {
         historico.setNomeUsuario(
                 agendamentoSalvo.getFkUsuario() != null ? agendamentoSalvo.getFkUsuario().getNome() : "Usuário desconhecido"
         );
-        historico.setNomeFuncionario(
-                agendamentoSalvo.getFkFuncionario() != null ? agendamentoSalvo.getFkFuncionario().getNome() : "Funcionário desconhecido"
-        );
         historico.setNomeServico(
                 agendamentoSalvo.getFkServico() != null ? agendamentoSalvo.getFkServico().getNome() : "Serviço não informado"
         );
@@ -80,15 +76,6 @@ public class AgendamentoService {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(responseDTO);
-    }
-
-    public List<AgendamentoResponseDTO> listarAgendamentosPorFuncionario(Integer funcionarioId) {
-        List<Agendamento> agendamentos = repository.findAllByFkFuncionarioId(funcionarioId);
-
-
-        return agendamentos.stream()
-                .map(mapper::toAgendamentoResponseDto)
-                .collect(Collectors.toList());
     }
 
     public List<AgendamentoResponseDTO> listarAgendamentosPorUsuario(Integer usuarioId) {
@@ -111,20 +98,6 @@ public class AgendamentoService {
         }
 
         return agendamentosPorMes;
-    }
-
-    public List<Map<String, Object>> getFuncionariosMaisRequisitados() {
-        List<Object[]> results = repository.findFuncionariosMaisRequisitados();
-        List<Map<String, Object>> funcionarios = new ArrayList<>();
-
-        for (Object[] result : results) {
-            Map<String, Object> funcionarioData = new HashMap<>();
-            funcionarioData.put("nome", result[0]);
-            funcionarioData.put("quantidade", result[1]);
-            funcionarios.add(funcionarioData);
-        }
-
-        return funcionarios;
     }
 
     public List<Map<String, Object>> getServicosMaisRequisitados() {
@@ -231,11 +204,6 @@ public class AgendamentoService {
             houveMudanca = true;
         }
 
-        if (!agendamento.getFkFuncionario().getId().equals(agendamentoRequest.getFkFuncionario())) {
-            descricaoMudancas.append("Profissional atualizado! ");
-            houveMudanca = true;
-        }
-
         if (!houveMudanca) {
             return ResponseEntity.status(HttpStatus.NOT_MODIFIED).body("Nenhuma alteração detectada.");
         }
@@ -248,8 +216,6 @@ public class AgendamentoService {
         agendamento.setFkUsuario(usuario);
         agendamento.setFkServico(servicoRepository.findById(agendamentoRequest.getFkServico())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Serviço não encontrado")));
-        agendamento.setFkFuncionario(funcionarioRepository.findById(agendamentoRequest.getFkFuncionario())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Funcionário não encontrado")));
 
         Agendamento agendamentoAtualizado = repository.save(agendamento);
 
@@ -259,7 +225,6 @@ public class AgendamentoService {
         historico.setStatusAnterior("Agendado");
         historico.setStatusAtual(descricaoMudancas.toString());
         historico.setNomeUsuario(agendamentoAtualizado.getFkUsuario() != null ? agendamentoAtualizado.getFkUsuario().getNome() : "Usuário desconhecido");
-        historico.setNomeFuncionario(agendamentoAtualizado.getFkFuncionario() != null ? agendamentoAtualizado.getFkFuncionario().getNome() : "Funcionário desconhecido");
         historico.setNomeServico(agendamentoAtualizado.getFkServico() != null ? agendamentoAtualizado.getFkServico().getNome() : "Serviço não informado");
 
         historicoRepository.save(historico);
@@ -300,9 +265,6 @@ public class AgendamentoService {
         historico.setStatusAtual("Cancelado");
         historico.setNomeUsuario(
                 agendamento.getFkUsuario() != null ? agendamento.getFkUsuario().getNome() : "Usuário desconhecido"
-        );
-        historico.setNomeFuncionario(
-                agendamento.getFkFuncionario() != null ? agendamento.getFkFuncionario().getNome() : "Funcionário desconhecido"
         );
         historico.setNomeServico(
                 agendamento.getFkServico() != null ? agendamento.getFkServico().getNome() : "Serviço não informado"

@@ -44,9 +44,9 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>com.microsoft.sqlserver</groupId>
-            <artifactId>mssql-jdbc</artifactId>
-            <version>12.4.1.jre11</version>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.33</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -91,11 +91,11 @@
             <artifactId>slf4j-api</artifactId>
             <version>2.0.7</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>ch.qos.logback</groupId>-->
-<!--            <artifactId>logback-classic</artifactId>-->
-<!--            <version>1.4.7</version>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>ch.qos.logback</groupId>-->
+        <!--            <artifactId>logback-classic</artifactId>-->
+        <!--            <version>1.4.7</version>-->
+        <!--        </dependency>-->
     </dependencies>
 
     <build>

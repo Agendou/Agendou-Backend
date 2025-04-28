@@ -15,7 +15,6 @@ import java.util.Optional;
 public interface AgendamentoRepository extends JpaRepository<Agendamento, Integer> {
 
     Optional<Agendamento> findByData(LocalDateTime data);
-    List<Agendamento> findAllByFkFuncionarioId(Integer idFuncionario);
     List<Agendamento> findAll();
     Optional<Agendamento> findById(Integer id);
 
@@ -32,13 +31,6 @@ public interface AgendamentoRepository extends JpaRepository<Agendamento, Intege
             "GROUP BY FUNCTION('MONTH', a.data) " +
             "ORDER BY FUNCTION('MONTH', a.data)")
     List<Object[]> findAgendamentosPorMes();
-
-    @Query("SELECT f.nome, COUNT(a) AS totalAgendamentos " +
-            "FROM Agendamento a " +
-            "JOIN a.fkFuncionario f " +
-            "GROUP BY f.id, f.nome " +
-            "ORDER BY totalAgendamentos DESC")
-    List<Object[]> findFuncionariosMaisRequisitados();
 
     @Query("SELECT s.nome, COUNT(a) AS totalAgendamentos " +
             "FROM Agendamento a " +

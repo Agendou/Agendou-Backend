@@ -19,8 +19,5 @@ public class UsuarioResponseDTO {
     private String telefone;
     private UsuarioRole role;
     private String token;
-    private LocalDateTime dataCadastro;
 
-    public UsuarioResponseDTO(Integer id, String updatedName, String mail, String newpassword, String number, UsuarioRole usuarioRole, String token) {
-    }
 }

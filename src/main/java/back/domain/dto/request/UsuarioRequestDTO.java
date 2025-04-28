@@ -18,8 +18,5 @@ public class UsuarioRequestDTO {
     private String senha;
     private String telefone;
     private UsuarioRole role;
-    private LocalDateTime dataCadastro;
 
-    public UsuarioRequestDTO(String testUser, String mail, String password, String number, UsuarioRole usuarioRole) {
-    }
 }

@@ -16,7 +16,6 @@ public class UsuarioMapper {
             usuario.setEmail(usuarioRequestDTO.getEmail());
             usuario.setSenha(usuarioRequestDTO.getSenha());
             usuario.setTelefone(usuarioRequestDTO.getTelefone());
-            usuario.setDataCadastro(usuarioRequestDTO.getDataCadastro());
             result = usuario;
         }
 
@@ -35,7 +34,6 @@ public class UsuarioMapper {
         usuarioResponseDTO.setSenha(usuario.getSenha());
         usuarioResponseDTO.setTelefone(usuario.getTelefone());
         usuarioResponseDTO.setRole(usuario.getRole());
-        usuarioResponseDTO.setDataCadastro(usuario.getDataCadastro());
 
         return usuarioResponseDTO;
     }

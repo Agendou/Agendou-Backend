@@ -41,9 +41,6 @@ public class Usuario implements UserDetails {
     @Column(name = "role")
     private UsuarioRole role;
 
-    @Column(name = "data_cadastro")
-    private LocalDateTime dataCadastro;
-
     public Usuario(int i, String testUser, String email, String senha, String number, UsuarioRole usuarioRole) {
     }
 
