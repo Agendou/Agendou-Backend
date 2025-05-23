@@ -95,20 +95,20 @@ public class HistoricoController {
         return ResponseEntity.ok(agendamentosFuturos);
     }
 
-    @Operation(summary = "Listar histórico de agendamento", description = "Recupera o histórico de um agendamento pelo ID")
+    @Operation(summary = "Listar histórico de agendamento", description = "Recupera todos os registros de histórico de um agendamento pelo ID do agendamento")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Histórico encontrado com sucesso"),
-            @ApiResponse(responseCode = "404", description = "Histórico não encontrado")
+            @ApiResponse(responseCode = "200", description = "Histórico(s) encontrado(s) com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Nenhum histórico encontrado para este agendamento")
     })
     @GetMapping("/agendamento/{idAgendamento}")
-    public ResponseEntity<HistoricoResponseDTO> listarHistoricoPorAgendamento(
+    public ResponseEntity<List<HistoricoResponseDTO>> listarHistoricoPorAgendamento(
             @PathVariable Integer idAgendamento) {
-
-        HistoricoAgendamento historico = service.listarHistoricoPorAgendamento(idAgendamento);
-
-        HistoricoResponseDTO responseDTO = mapper.toHistoricoResponseDto(historico);
-
-        return ResponseEntity.ok(responseDTO);
+        try {
+            List<HistoricoResponseDTO> response = service.listarHistoricoPorAgendamento(idAgendamento);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(404).body(List.of());
+        }
     }
 
     @Operation(summary = "Listar agendamentos passados", description = "Lista todos os agendamentos do passado desde uma data específica até o momento atual")

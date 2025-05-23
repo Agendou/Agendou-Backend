@@ -8,8 +8,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -28,18 +26,21 @@ public class Usuario implements UserDetails {
     @Column(name = "nome")
     private String nome;
 
+    @Column(name = "telefone")
+    private String telefone;
+
     @Column(name = "email")
     private String email;
 
     @Column(name = "senha")
     private String senha;
 
-    @Column(name = "telefone")
-    private String telefone;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
     private UsuarioRole role;
+
+    @OneToMany(mappedBy = "fkUsuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Agendamento> agendamentos;
 
     public Usuario(int i, String testUser, String email, String senha, String number, UsuarioRole usuarioRole) {
     }

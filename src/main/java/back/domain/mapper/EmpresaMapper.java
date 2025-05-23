@@ -9,24 +9,23 @@ import org.springframework.stereotype.Component;
 public class EmpresaMapper {
 
     public Empresa toEntity(EmpresaRequestDTO empresaRequestDTO){
-        Empresa result = null;
-        if (empresaRequestDTO != null){
-            Empresa empresa = new Empresa();
-            empresa.setNomeEmpresa(empresa.getNomeEmpresa());
-            empresa.setEmail(empresa.getEmail());
-            empresa.setRepresentante(empresa.getRepresentante());
-            empresa.setSenha(empresa.getSenha());
-            empresa.setTelefone(empresa.getTelefone());
-            empresa.setCnpj(empresa.getCnpj());
-            result = empresa;
-        }
-        return result;
+        if(empresaRequestDTO == null) return null;
+
+        Empresa empresa = new Empresa();
+        empresa.setId(empresaRequestDTO.getId());
+        empresa.setNomeEmpresa(empresaRequestDTO.getNomeEmpresa());
+        empresa.setRepresentante(empresaRequestDTO.getRepresentante());
+        empresa.setEmail(empresaRequestDTO.getEmail());
+        empresa.setSenha(empresaRequestDTO.getSenha());
+        empresa.setTelefone(empresaRequestDTO.getTelefone());
+        empresa.setCnpj(empresaRequestDTO.getCnpj());
+        empresa.setRole(empresaRequestDTO.getRole());
+
+        return empresa;
     }
 
     public EmpresaResponseDTO toEmpresaResponseDto(Empresa empresa){
-        if (empresa == null){
-            return null;
-        }
+        if (empresa == null) return null;
 
         EmpresaResponseDTO empresaResponseDTO = new EmpresaResponseDTO();
         empresaResponseDTO.setId(empresa.getId());
@@ -36,6 +35,7 @@ public class EmpresaMapper {
         empresaResponseDTO.setSenha(empresa.getSenha());
         empresaResponseDTO.setTelefone(empresa.getTelefone());
         empresaResponseDTO.setCnpj(empresa.getCnpj());
+        empresaResponseDTO.setRole(empresa.getRole());
 
         return empresaResponseDTO;
     }

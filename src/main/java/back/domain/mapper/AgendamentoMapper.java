@@ -4,63 +4,68 @@ package back.domain.mapper;
 import back.domain.dto.request.AgendamentoRequestDTO;
 import back.domain.dto.response.AgendamentoResponseDTO;
 import back.domain.dto.response.AgendamentoSimplificadoResponseDTO;
-import back.domain.dto.response.UsuarioResponseDTO;
 import back.domain.model.*;
 import org.springframework.stereotype.Component;
 
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 @Component
 public class AgendamentoMapper {
 
     public Agendamento toEntity(AgendamentoRequestDTO agendamentoRequestDTO) {
+        if (agendamentoRequestDTO == null) return null;
+
         Agendamento agendamento = new Agendamento();
 
         agendamento.setId(agendamentoRequestDTO.getId());
         agendamento.setData(agendamentoRequestDTO.getData());
+        agendamento.setDescricao(agendamentoRequestDTO.getDescricao());
 
-
-        if (agendamentoRequestDTO.getFkUsuario() != null) {
+        if (agendamentoRequestDTO.getFkUsuarioId() != null) {
             Usuario usuario = new Usuario();
-            usuario.setId(agendamentoRequestDTO.getFkUsuario());
+            usuario.setId(agendamentoRequestDTO.getFkUsuarioId());
             agendamento.setFkUsuario(usuario);
         }
 
-        if (agendamentoRequestDTO.getFkServico() != null) {
+        if (agendamentoRequestDTO.getFkServicoId() != null) {
             Servico servico = new Servico();
-            servico.setId(agendamentoRequestDTO.getFkServico());
+            servico.setId(agendamentoRequestDTO.getFkServicoId());
             agendamento.setFkServico(servico);
         }
 
+        if (agendamentoRequestDTO.getFkEmpresaId() != null) {
+            Empresa empresa = new Empresa();
+            empresa.setId(agendamentoRequestDTO.getFkEmpresaId());
+            agendamento.setFkEmpresa(empresa);
+        }
         return agendamento;
     }
 
-    public static AgendamentoSimplificadoResponseDTO mapearParaSimplificado(Agendamento agendamento) {
+    public static AgendamentoSimplificadoResponseDTO toAgendamentoSimplificadoResponseDTO(Agendamento agendamento) {
+        if(agendamento == null || agendamento.getFkUsuario() == null || agendamento.getData() == null) {
+            return null;
+        }
+
         DateTimeFormatter dataFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         DateTimeFormatter horaFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
-        // Mapeia para o DTO simplificado corretamente
         return new AgendamentoSimplificadoResponseDTO(
                 agendamento.getFkUsuario().getNome(),
                 agendamento.getData().format(dataFormatter),
                 agendamento.getData().format(horaFormatter)
         );
     }
-
-
     public AgendamentoResponseDTO toAgendamentoResponseDto(Agendamento entity) {
-
-        if (entity == null) {
-            return null;
-        }
+        if (entity == null) return null;
 
         AgendamentoResponseDTO dto = new AgendamentoResponseDTO();
 
         dto.setId(entity.getId());
         dto.setData(entity.getData());
+        dto.setDescricao(entity.getDescricao());
         dto.setFkUsuario(entity.getFkUsuario());
         dto.setFkServico(entity.getFkServico());
+        dto.setFkEmpresa(entity.getFkEmpresa());
 
         return dto;
     }

@@ -16,7 +16,4 @@ public class HistoricoResponseDTO {
     private String statusAnterior;
     private String statusAtual;
     private AgendamentoSimplificadoResponseDTO agendamento;
-
-    public HistoricoResponseDTO(Integer id, String statusAnterior, String statusAtual, AgendamentoSimplificadoResponseDTO agendamentoSimplificadoResponseDTO) {
-    }
 }

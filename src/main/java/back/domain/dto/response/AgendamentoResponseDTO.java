@@ -1,5 +1,6 @@
 package back.domain.dto.response;
 
+import back.domain.model.Empresa;
 import back.domain.model.Servico;
 import back.domain.model.Usuario;
 import lombok.AllArgsConstructor;
@@ -15,6 +16,8 @@ public class AgendamentoResponseDTO {
 
         private Integer id;
         private LocalDateTime data;
+        private String descricao;
         private Usuario fkUsuario;
         private Servico fkServico;
+        private Empresa fkEmpresa;
 }

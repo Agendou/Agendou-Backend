@@ -2,6 +2,7 @@ package back.domain.repository;
 
 
 import back.domain.dto.response.AgendamentoPorMesDTO;
+import back.domain.enums.StatusAgendamento;
 import back.domain.model.Agendamento;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -15,7 +16,26 @@ import java.util.Optional;
 public interface AgendamentoRepository extends JpaRepository<Agendamento, Integer> {
 
     Optional<Agendamento> findByData(LocalDateTime data);
+
+    //o mesmo que o findByData, mas não retorna os cancelados
+    Optional<Agendamento> findByDataAndStatusNot(LocalDateTime data);
+
+    Optional<Agendamento> findByIdAndStatusNot(Integer id, StatusAgendamento status);
+
+    List<Agendamento> findByDataBetweenAndStatusNot(LocalDateTime datInicio, LocalDateTime dataFim, StatusAgendamento status);
+
+    List<Agendamento> findAllByFkUsuarioId(Integer idUsuario);
+
+    List<Agendamento> findByFkUsuarioIdAndStatusNot(Integer idUsuario, StatusAgendamento status);
+
+    List<Agendamento> findByFkEmpresaIdAndStatusNot(Integer empresaId, StatusAgendamento status);
+
+    //o mesmo que o findAll, sem nenhum filtro e vai listar todos menos os cancelados
+    List<Agendamento> findByStatusNot(StatusAgendamento status);
+
+    //não utilizar
     List<Agendamento> findAll();
+
     Optional<Agendamento> findById(Integer id);
 
     @Query("SELECT COUNT(a) FROM Agendamento a WHERE a.fkUsuario.id = :fkUsuario AND a.data BETWEEN :dataInicio AND :dataFim")
@@ -41,8 +61,6 @@ public interface AgendamentoRepository extends JpaRepository<Agendamento, Intege
 
     @Query("SELECT EXTRACT(HOUR FROM a.data) AS hora, COUNT(a) FROM Agendamento a GROUP BY EXTRACT(HOUR FROM a.data) ORDER BY EXTRACT(HOUR FROM a.data)")
     List<Object[]> findHorariosPico();
-
-    List<Agendamento> findAllByFkUsuarioId(Integer idUsuario);
 
 
 }

@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class EmpresaRequestDTO {
 
+    private Integer id;
     private String nomeEmpresa;
     private String representante;
     private String email;

@@ -1,11 +1,11 @@
 package back.domain.dto.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -13,6 +13,8 @@ public class AgendamentoRequestDTO {
 
     private Integer id;
     private LocalDateTime data;
-    private Integer fkUsuario;
-    private Integer fkServico;
+    private String descricao;
+    private Integer fkUsuarioId;
+    private Integer fkServicoId;
+    private Integer fkEmpresaId;
 }

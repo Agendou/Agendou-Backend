@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class ServicoRequestDTO {
+
     private Integer id;
     private String nome;
     private Double preco;

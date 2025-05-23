@@ -3,38 +3,32 @@ package back.domain.mapper;
 import back.domain.dto.request.ServicoRequestDTO;
 import back.domain.dto.response.ServicoResponseDTO;
 import back.domain.model.Servico;
-import back.service.service.ServicoService;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ServicoMapper {
 
-    public Servico toEntity(ServicoRequestDTO requestDTO) {
-        Servico result = null;
-        if (requestDTO != null) {
-            Servico servico = new Servico();
-            servico.setNome(requestDTO.getNome());
-            servico.setDescricao(requestDTO.getDescricao());
-            servico.setPreco(requestDTO.getPreco());
-            result = servico;
-        }
-        return result;
+    public Servico toEntity(ServicoRequestDTO servicoRequestDTO) {
+        if(servicoRequestDTO == null) return null;
 
+        Servico servico = new Servico();
+        servico.setId(servicoRequestDTO.getId());
+        servico.setNome(servicoRequestDTO.getNome());
+        servico.setDescricao(servicoRequestDTO.getDescricao());
+        servico.setPreco(servicoRequestDTO.getPreco());
+
+        return servico;
     }
 
     public ServicoResponseDTO toServicoResponseDto(Servico servico) {
-        if (servico == null) {
-            return null;
-        }
+        if (servico == null) return null;
 
-        ServicoResponseDTO responseDTO = new ServicoResponseDTO();
-        responseDTO.setId(servico.getId());
-        responseDTO.setNome(servico.getNome());
-        responseDTO.setDescricao(servico.getDescricao());
-        responseDTO.setPreco(servico.getPreco());
-
-        return responseDTO;
-
+        return new ServicoResponseDTO(
+                servico.getId(),
+                servico.getNome(),
+                servico.getPreco(),
+                servico.getDescricao()
+        );
     }
 }
 

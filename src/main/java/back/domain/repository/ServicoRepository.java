@@ -1,7 +1,6 @@
 package back.domain.repository;
 
 import back.domain.model.Servico;
-import back.domain.model.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

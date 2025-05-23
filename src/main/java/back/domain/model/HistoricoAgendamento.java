@@ -1,5 +1,6 @@
 package back.domain.model;
 
+import back.domain.enums.StatusAgendamento;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,24 +17,29 @@ public class HistoricoAgendamento {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_historico_agendamento")
+    @Column(name = "id_historico")
     private Integer id;
 
-    @Column(name = "data")
+    @Column(name = "data", nullable = false)
     private LocalDateTime data;
 
-    @Column(name = "status_anterior")
-    private String statusAnterior;
+    @Column(name = "status_anterior", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private StatusAgendamento statusAnterior;
 
-    @Column(name = "status_atual")
-    private String statusAtual;
+    @Column(name = "status_atual", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private StatusAgendamento statusAtual;
 
-    @Column(name = "nome_usuario")
-    private String nomeUsuario;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fk_agendamento", nullable = false)
+    private Agendamento agendamento;
 
-    @Column(name = "nome_funcionario")
-    private String nomeFuncionario;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fk_empresa", nullable = false)
+    private Empresa empresa;
 
-    @Column(name = "nome_servico")
-    private String nomeServico;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fk_usuario", nullable = false)
+    private Usuario usuario;
 }
