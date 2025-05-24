@@ -4,6 +4,7 @@ import back.api.controller.HistoricoController;
 import back.domain.dto.request.AgendamentoRequestDTO;
 import back.domain.dto.request.HistoricoRequestDTO;
 import back.domain.dto.response.*;
+import back.domain.enums.StatusAgendamento;
 import back.domain.mapper.AgendamentoMapper;
 import back.domain.model.*;
 import back.domain.repository.*;
@@ -243,10 +244,11 @@ public class AgendamentoService {
                 .body(responseDTO);
     }
 
-
+    //metodo softDelete - persiste os dados em um histórico e altera apenas o seu status para "cancelar" o agendamento.
+    //não deleta o agendamento de fato da tabela agendamento
     @Transactional
     public ResponseEntity<?> removerAgendamento(Integer id) {
-        Optional<Agendamento> agendamentoExistente = repository.findById(id);
+        Optional<Agendamento> agendamentoExistente = repository.findByIdAndStatusNot(id, StatusAgendamento.CANCELADO);
 
         if (agendamentoExistente.isEmpty()) {
             logger.error("Falha ao deletar o agendamento");
@@ -254,31 +256,25 @@ public class AgendamentoService {
         }
 
         Agendamento agendamento = agendamentoExistente.get();
+        Usuario usuario = agendamento.getFkUsuario();
+        Empresa empresa = agendamento.getFkEmpresa();
+        StatusAgendamento statusAnterior = agendamento.getStatus();
 
-        if (agendamento.getId() == null) {
-            throw new IllegalArgumentException("O ID do agendamento é nulo.");
-        }
+        agendamento.setStatus(StatusAgendamento.CANCELADO);
+        repository.save(agendamento);
 
         HistoricoAgendamento historico = new HistoricoAgendamento();
-        historico.setData(agendamento.getData());
-        historico.setStatusAnterior("Ativo");
-        historico.setStatusAtual("Cancelado");
-        historico.setNomeUsuario(
-                agendamento.getFkUsuario() != null ? agendamento.getFkUsuario().getNome() : "Usuário desconhecido"
-        );
-        historico.setNomeServico(
-                agendamento.getFkServico() != null ? agendamento.getFkServico().getNome() : "Serviço não informado"
-        );
+        historico.setData(LocalDateTime.now());
+        historico.setStatusAnterior(statusAnterior);
+        historico.setStatusAtual(StatusAgendamento.CANCELADO);
+        historico.setUsuario(usuario);
+        historico.setEmpresa(empresa);
+        historico.setAgendamento(agendamento);
 
         historicoRepository.save(historico);
-
-        repository.delete(agendamento);
 
         logger.info("Agendamento deletado com sucesso: " + agendamento.getData());
         return ResponseEntity.status(200).body("Agendamento deletado e armazenado no histórico.");
     }
-
-
-
 
 }

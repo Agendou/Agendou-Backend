@@ -18,7 +18,7 @@ public interface AgendamentoRepository extends JpaRepository<Agendamento, Intege
     Optional<Agendamento> findByData(LocalDateTime data);
 
     //o mesmo que o findByData, mas não retorna os cancelados
-    Optional<Agendamento> findByDataAndStatusNot(LocalDateTime data);
+    Optional<Agendamento> findByDataAndStatusNot(LocalDateTime data, StatusAgendamento status);
 
     Optional<Agendamento> findByIdAndStatusNot(Integer id, StatusAgendamento status);
 
@@ -61,6 +61,5 @@ public interface AgendamentoRepository extends JpaRepository<Agendamento, Intege
 
     @Query("SELECT EXTRACT(HOUR FROM a.data) AS hora, COUNT(a) FROM Agendamento a GROUP BY EXTRACT(HOUR FROM a.data) ORDER BY EXTRACT(HOUR FROM a.data)")
     List<Object[]> findHorariosPico();
-
 
 }
