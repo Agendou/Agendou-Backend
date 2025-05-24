@@ -11,17 +11,18 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "servico")
 public class Servico {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_servico")
     private Integer id;
 
-    @Column(name = "nome")
+    @Column(name = "nome", nullable = false)
     private String nome;
-
-    @Column(name = "preco")
-    private Double preco;
 
     @Column(name = "descricao")
     private String descricao;
+
+    @Column(name = "preco")
+    private Double preco;
 }

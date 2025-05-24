@@ -1,7 +1,6 @@
 package back.domain.model;
 
 import back.domain.enums.EmpresaRole;
-import back.domain.enums.UsuarioRole;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
 import java.util.Collection;
 import java.util.List;
 
@@ -24,33 +24,34 @@ public class Empresa implements UserDetails {
     @Column(name = "id_empresa")
     private Integer id;
 
-    @Column(name = "nome")
-    private String nomeEmpresa;
+    @Column(name = "nome", nullable = false)
+    private String nome;
 
-    @Column(name = "representante")
+    @Column(name = "representante", nullable = false)
     private String representante;
 
-    @Column(name = "email")
-    private String email;
-
-    @Column(name = "senha")
-    private String senha;
-
-    @Column(name = "telefone")
+    @Column(name = "telefone", nullable = false)
     private String telefone;
 
-    @Column(name = "cnpj")
+    @Column(name = "email", nullable = false)
+    private String email;
+
+    @Column(name = "senha", nullable = false)
+    private String senha;
+
+    @Column(name = "cnpj", nullable = false)
     private String cnpj;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
     private EmpresaRole role;
 
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if (this.role == EmpresaRole.ADMIN) return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
-        else return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        if (this.role == EmpresaRole.ADMIN)
+            return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
+        else
+            return List.of(new SimpleGrantedAuthority("ROLE_USER"));
     }
 
     @Override
@@ -64,21 +65,14 @@ public class Empresa implements UserDetails {
     }
 
     @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
+    public boolean isAccountNonExpired() { return true; }
 
     @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
+    public boolean isAccountNonLocked() { return true; }
 
     @Override
     public boolean isCredentialsNonExpired() { return true; }
 
     @Override
-    public boolean isEnabled() {
-        return true;
-    }
-
+    public boolean isEnabled() { return true; }
 }

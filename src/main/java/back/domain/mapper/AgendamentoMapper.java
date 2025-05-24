@@ -24,13 +24,13 @@ public class AgendamentoMapper {
         if (agendamentoRequestDTO.getFkUsuario() != null) {
             Usuario usuario = new Usuario();
             usuario.setId(agendamentoRequestDTO.getFkUsuario());
-            agendamento.setFkUsuario(usuario);
+          //  agendamento.setFkUsuario(usuario);
         }
 
         if (agendamentoRequestDTO.getFkServico() != null) {
             Servico servico = new Servico();
             servico.setId(agendamentoRequestDTO.getFkServico());
-            agendamento.setFkServico(servico);
+           // agendamento.setFkServico(servico);
         }
 
         return agendamento;
@@ -42,9 +42,9 @@ public class AgendamentoMapper {
 
         // Mapeia para o DTO simplificado corretamente
         return new AgendamentoSimplificadoResponseDTO(
-                agendamento.getFkUsuario().getNome(),
-                agendamento.getData().format(dataFormatter),
-                agendamento.getData().format(horaFormatter)
+            //    agendamento.getFkUsuario().getNome(),
+               // agendamento.getData().format(dataFormatter);
+             //   agendamento.getData().format(horaFormatter)
         );
     }
 
@@ -59,8 +59,8 @@ public class AgendamentoMapper {
 
         dto.setId(entity.getId());
         dto.setData(entity.getData());
-        dto.setFkUsuario(entity.getFkUsuario());
-        dto.setFkServico(entity.getFkServico());
+       // dto.setFkUsuario(entity.getFkUsuario());
+       // dto.setFkServico(entity.getFkServico());
 
         return dto;
     }
