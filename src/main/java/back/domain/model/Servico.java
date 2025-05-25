@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
@@ -23,6 +25,6 @@ public class Servico {
     @Column(name = "descricao", length = 100)
     private String descricao;
 
-    @Column(name = "preco")
-    private Double preco;
+    @Column(name = "preco", precision = 10, scale = 2)
+    private BigDecimal preco;
 }

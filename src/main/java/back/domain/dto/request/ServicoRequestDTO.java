@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -11,6 +13,6 @@ public class ServicoRequestDTO {
 
     private Integer id;
     private String nome;
-    private Double preco;
+    private BigDecimal preco;
     private String descricao;
 }
