@@ -3,10 +3,8 @@ package back.service.service;
 
 import back.domain.dto.request.ServicoRequestDTO;
 import back.domain.dto.response.ServicoResponseDTO;
-import back.domain.dto.response.UsuarioResponseDTO;
 import back.domain.mapper.ServicoMapper;
 import back.domain.model.Servico;
-import back.domain.model.Usuario;
 import back.domain.repository.ServicoRepository;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
@@ -14,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

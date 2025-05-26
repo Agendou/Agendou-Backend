@@ -15,18 +15,20 @@ public interface HistoricoRepository extends JpaRepository<HistoricoAgendamento,
 
     List<HistoricoAgendamento> findByStatusAtual(String status);
 
+    List<HistoricoAgendamento> findByAgendamentoId(Integer idAgendamento);
+
     List<HistoricoAgendamento> findByDataAfter(LocalDateTime data);
 
     List<HistoricoAgendamento> findAll();
 
     Optional<HistoricoAgendamento> findById(Integer id);
 
-    @Query("SELECT h.nomeUsuario " +
+    @Query("SELECT h.usuario.id " +
             "FROM HistoricoAgendamento h " +
             "WHERE h.data BETWEEN :startDate AND :endDate " +
-            "GROUP BY h.nomeUsuario " +
+            "GROUP BY h.usuario.id " +
             "HAVING COUNT(h) >= 4")
-    List<String> findActiveUsers(LocalDateTime startDate, LocalDateTime endDate);
+    List<String> findActiveUsers(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 
     @Query("SELECT COUNT(h) FROM HistoricoAgendamento h WHERE h.statusAtual = 'Cancelado'")
     Long countCancelados();

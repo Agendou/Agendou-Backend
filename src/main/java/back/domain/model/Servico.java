@@ -25,6 +25,6 @@ public class Servico {
     @Column(name = "descricao", length = 100)
     private String descricao;
 
-    @Column(name = "preco", precision = 10, scale = 2)
-    private BigDecimal preco;
+    @Column(name = "preco")
+    private Double preco;
 }

@@ -22,6 +22,8 @@ public interface AgendamentoRepository extends JpaRepository<Agendamento, Intege
 
     Optional<Agendamento> findByIdAndStatusNot(Integer id, StatusAgendamento status);
 
+    List<Agendamento> findByFkEmpresaIdAndStatus(Integer empresaId, StatusAgendamento status);
+
     List<Agendamento> findByDataBetweenAndStatusNot(LocalDateTime datInicio, LocalDateTime dataFim, StatusAgendamento status);
 
     List<Agendamento> findAllByFkUsuarioId(Integer idUsuario);

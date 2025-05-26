@@ -15,7 +15,7 @@ public class HistoricoRequestDTO {
     private LocalDateTime data;
     private StatusAgendamento statusAnterior;
     private StatusAgendamento statusAtual;
-    private Integer agendamentoId;
-    private Integer empresaId;
-    private Integer usuarioId;
+    private Integer idAgendamento;
+    private Integer idEmpresa;
+    private Integer idUsuario;
 }

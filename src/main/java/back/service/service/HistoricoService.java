@@ -4,12 +4,16 @@ import back.domain.dto.request.HistoricoRequestDTO;
 import back.domain.dto.response.AgendamentoSimplificadoResponseDTO;
 import back.domain.dto.response.AgendamentosPorMesDTO;
 import back.domain.dto.response.HistoricoResponseDTO;
-import back.domain.mapper.AgendamentoMapper;
 import back.domain.mapper.HistoricoMapper;
 import back.domain.model.Agendamento;
+import back.domain.model.Empresa;
 import back.domain.model.HistoricoAgendamento;
+import back.domain.model.Usuario;
 import back.domain.repository.AgendamentoRepository;
+import back.domain.repository.EmpresaRepository;
 import back.domain.repository.HistoricoRepository;
+import back.domain.repository.UsuarioRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
@@ -19,38 +23,61 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
 @Service
+@AllArgsConstructor
 public class HistoricoService {
 
     private final HistoricoRepository repository;
     private final HistoricoMapper mapper;
     private final AgendamentoRepository agendamentoRepository;
+    private final HistoricoRepository historicoRepository;
+    private final EmpresaRepository empresaRepository;
+    private final UsuarioRepository usuarioRepository;
 
-    public HistoricoService(HistoricoRepository historicoRepository, HistoricoMapper historicoMapper, AgendamentoRepository agendamentoRepository) {
-        this.repository = historicoRepository;
-        this.mapper = historicoMapper;
-        this.agendamentoRepository = agendamentoRepository;
-    }
 
-    public HistoricoAgendamento salvarHistorico(HistoricoRequestDTO historicoRequest) {
-        Agendamento agendamento = agendamentoRepository.findById(historicoRequest.getIdAgendamento())
+    public HistoricoResponseDTO salvarHistorico(HistoricoRequestDTO dto) {
+        Agendamento agendamento = agendamentoRepository.findById(dto.getIdAgendamento())
                 .orElseThrow(() -> new RuntimeException("Agendamento não encontrado"));
 
-        HistoricoAgendamento historico = new HistoricoAgendamento();
-        historico.setNomeUsuario(historico.getNomeUsuario());
-        historico.setNomeServico(historico.getNomeServico());
-        historico.setNomeFuncionario(historico.getNomeFuncionario());
-        historico.setStatusAnterior(historicoRequest.getStatusAnterior());
-        historico.setStatusAtual(historicoRequest.getStatusAtual());
-        historico.setData(LocalDateTime.now());
+        Empresa empresa = empresaRepository.findById(dto.getIdEmpresa())
+                .orElseThrow(() -> new RuntimeException("Empresa não encontrada"));
 
-        return repository.save(historico);
+        Usuario usuario = usuarioRepository.findById(dto.getIdUsuario())
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        HistoricoAgendamento historico = new HistoricoAgendamento();
+        historico.setData(dto.getData() != null ? dto.getData() : LocalDateTime.now());
+        historico.setStatusAnterior(dto.getStatusAnterior());
+        historico.setStatusAtual(dto.getStatusAtual());
+        historico.setAgendamento(agendamento);
+        historico.setEmpresa(empresa);
+        historico.setUsuario(usuario);
+
+        HistoricoAgendamento salvo = historicoRepository.save(historico);
+
+        return new HistoricoResponseDTO(
+                salvo.getId(),
+                salvo.getData(),
+                salvo.getStatusAnterior(),
+                salvo.getStatusAtual(),
+                new AgendamentoSimplificadoResponseDTO(
+                        salvo.getAgendamento().getId(),
+                        salvo.getAgendamento().getData(),
+                        salvo.getAgendamento().getFkServico().getNome(),
+                        salvo.getAgendamento().getStatus()
+                ),
+                salvo.getEmpresa().getId(),
+                salvo.getEmpresa().getNomeEmpresa(),
+                salvo.getUsuario().getId(),
+                salvo.getUsuario().getNome()
+        );
     }
+
 
     public HistoricoAgendamento listarHistoricoPorAgendamento(Integer idAgendamento) {
         return repository.findById(idAgendamento).orElseThrow(() ->
@@ -78,7 +105,7 @@ public class HistoricoService {
         return historicos.stream()
                 .map(historico -> {
                     AgendamentoSimplificadoResponseDTO agendamentoSimplificado = new AgendamentoSimplificadoResponseDTO(
-                            historico.getNomeUsuario(),
+                            historico.getUsuario().getNome(),
                             historico.getData()
                     );
 
@@ -87,7 +114,11 @@ public class HistoricoService {
                             historico.getData(),
                             historico.getStatusAnterior(),
                             historico.getStatusAtual(),
-                            agendamentoSimplificado
+                            agendamentoSimplificado,
+                            historico.getEmpresa().getId(),
+                            historico.getEmpresa().getNomeEmpresa(),
+                            historico.getUsuario().getId(),
+                            historico.getUsuario().getNome()
                     );
                 })
                 .collect(Collectors.toList());
@@ -146,7 +177,9 @@ public class HistoricoService {
                 .collect(Collectors.toList());
     }
 
-    public Long contarCancelados() { return repository.countCancelados(); }
+    public Long contarCancelados() {
+        return repository.countCancelados();
+    }
 
     public List<AgendamentosPorMesDTO> obterTotalAgendamentosPorMes() {
         List<Object[]> resultados = repository.totalAgendamentosPorMes();
@@ -154,7 +187,6 @@ public class HistoricoService {
                 .map(obj -> new AgendamentosPorMesDTO((String) obj[0], (Long) obj[1]))
                 .collect(Collectors.toList());
     }
-
 
 
     public byte[] getHistoricoCsv(LocalDateTime dataInicio, LocalDateTime dataFim) throws IOException {
@@ -183,7 +215,7 @@ public class HistoricoService {
                         dto.getData(),
                         dto.getStatusAnterior(),
                         dto.getStatusAtual(),
-                        dto.getAgendamento() != null ? dto.getAgendamento().toString() : ""));
+                        dto.getFkAgendamento().getId() != null ? dto.getFkAgendamento().getId().toString() : ""));
             }
 
             writer.flush();

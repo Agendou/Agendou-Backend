@@ -1,5 +1,6 @@
 package back.domain.dto.request;
 
+import back.domain.enums.StatusAgendamento;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -14,7 +15,8 @@ public class AgendamentoRequestDTO {
     private Integer id;
     private LocalDateTime data;
     private String descricao;
-    private Integer fkUsuarioId;
-    private Integer fkServicoId;
-    private Integer fkEmpresaId;
+    private StatusAgendamento status;
+    private Integer fkUsuario;
+    private Integer fkServico;
+    private Integer fkEmpresa;
 }

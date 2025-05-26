@@ -21,21 +21,21 @@ public class AgendamentoMapper {
         agendamento.setData(agendamentoRequestDTO.getData());
         agendamento.setDescricao(agendamentoRequestDTO.getDescricao());
 
-        if (agendamentoRequestDTO.getFkUsuarioId() != null) {
+        if (agendamentoRequestDTO.getFkUsuario() != null) {
             Usuario usuario = new Usuario();
-            usuario.setId(agendamentoRequestDTO.getFkUsuarioId());
+            usuario.setId(agendamentoRequestDTO.getFkUsuario());
             agendamento.setFkUsuario(usuario);
         }
 
-        if (agendamentoRequestDTO.getFkServicoId() != null) {
+        if (agendamentoRequestDTO.getFkServico() != null) {
             Servico servico = new Servico();
-            servico.setId(agendamentoRequestDTO.getFkServicoId());
+            servico.setId(agendamentoRequestDTO.getFkServico());
             agendamento.setFkServico(servico);
         }
 
-        if (agendamentoRequestDTO.getFkEmpresaId() != null) {
+        if (agendamentoRequestDTO.getFkEmpresa() != null) {
             Empresa empresa = new Empresa();
-            empresa.setId(agendamentoRequestDTO.getFkEmpresaId());
+            empresa.setId(agendamentoRequestDTO.getFkEmpresa());
             agendamento.setFkEmpresa(empresa);
         }
         return agendamento;

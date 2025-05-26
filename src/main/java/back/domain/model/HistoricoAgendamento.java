@@ -17,7 +17,7 @@ public class HistoricoAgendamento {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_historico")
+    @Column(name = "id_historico_agendamento")
     private Integer id;
 
     @Column(name = "data", nullable = false)
@@ -31,15 +31,15 @@ public class HistoricoAgendamento {
     @Enumerated(EnumType.STRING)
     private StatusAgendamento statusAtual;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "fk_agendamento", nullable = false)
     private Agendamento agendamento;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "fk_empresa", nullable = false)
     private Empresa empresa;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "fk_usuario", nullable = false)
     private Usuario usuario;
 }

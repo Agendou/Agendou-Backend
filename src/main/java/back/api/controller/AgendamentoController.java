@@ -45,7 +45,7 @@ public class AgendamentoController {
     })
     @PutMapping("/atualizar/{id}")
     public ResponseEntity<?> atualizarAgendamento(@PathVariable Integer id, @RequestBody @Valid AgendamentoRequestDTO agendamento) {
-        return service.atualizarAgendamento(id,agendamento);
+        return service.atualizarAgendamento(id, agendamento);
     }
 
     @Operation(summary = "Remover agendamento", description = "Remove um agendamento existente")
@@ -82,6 +82,13 @@ public class AgendamentoController {
         return ResponseEntity.status(200).body(service.listarAgendamentosPorEmpresa(id));
     }
 
+    @Operation(summary = "Busca por usuários ativos no sistema", description = "Busca todos os usuários ativos no sistema com base em agendamentos dentro de um período de tempo.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = " Usuários ativos encontrados com sucesso",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Agendamento.class))),
+            @ApiResponse(responseCode = "400", description = "Erro ao listar agendamentos")
+    })
     @GetMapping("/usuarios-ativos")
     public ResponseEntity<List<Integer>> buscarUsuariosAtivos() {
         try {
@@ -114,18 +121,40 @@ public class AgendamentoController {
         return service.buscarAgendamentoPorId(id);
     }
 
+
+    @Operation(summary = "Listar agendamentos por mês atual ou último", description = "Lista os agendamentos do mês atual ou do último mês.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Agendamentos listados com sucesso",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = AgendamentoResponseDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Erro ao listar agendamentos")
+    })
     @GetMapping("/mes-atual-ou-ultimo")
     public ResponseEntity<List<AgendamentoResponseDTO>> listarAgendamentosPorMesAtualOuUltimo() {
         List<AgendamentoResponseDTO> agendamentos = service.listarAgendamentosPorMesAtualOuUltimo();
         return ResponseEntity.ok(agendamentos);
     }
 
+    @Operation(summary = "Listar serviços mais requisitados", description = "Lista os serviços mais requisitados com base nos agendamentos.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Serviços listados com sucesso",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Map.class))),
+            @ApiResponse(responseCode = "400", description = "Erro ao listar serviços")
+    })
     @GetMapping("/servicos-mais-requisitados")
     public ResponseEntity<List<Map<String, Object>>> getServicosMaisRequisitados() {
         List<Map<String, Object>> servicos = service.buscarServicosMaisRequisitados();
         return ResponseEntity.ok(servicos);
     }
 
+    @Operation(summary = "Listar horários de pico", description = "Lista os horários de pico com base nos agendamentos.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Horários de pico listados com sucesso",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = List.class))),
+            @ApiResponse(responseCode = "400", description = "Erro ao listar horários de pico")
+    })
     @GetMapping("/horarios-pico")
     public List<Object[]> getHorariosPico() {
         return service.buscarHorariosPico();

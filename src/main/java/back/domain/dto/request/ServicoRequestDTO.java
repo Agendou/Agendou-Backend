@@ -13,6 +13,6 @@ public class ServicoRequestDTO {
 
     private Integer id;
     private String nome;
-    private BigDecimal preco;
+    private Double preco;
     private String descricao;
 }

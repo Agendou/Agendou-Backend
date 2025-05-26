@@ -24,19 +24,15 @@ public class HistoricoMapper {
         HistoricoResponseDTO dto = new HistoricoResponseDTO();
         dto.setId(entity.getId());
         dto.setData(entity.getData());
-        dto.setStatusAnterior(entity.getStatusAnterior().name());
-        dto.setStatusAtual(entity.getStatusAtual().name());
+        dto.setStatusAnterior(entity.getStatusAnterior());
+        dto.setStatusAtual(entity.getStatusAtual());
+        dto.setFkAgendamento(entity.getAgendamento());
+        dto.setFkUsuario(entity.getUsuario());
+        dto.setFkEmpresa(entity.getEmpresa());
 
-        if(entity.getAgendamento() != null && entity.getAgendamento().getFkUsuario() != null) {
-            AgendamentoSimplificadoResponseDTO agendamentoSimplificado =
-                    new AgendamentoSimplificadoResponseDTO(
-                            entity.getAgendamento().getFkUsuario().getNome(),
-                            entity.getAgendamento().getData()
-                    );
-            dto.setAgendamento(agendamentoSimplificado);
-        }
         return dto;
     }
+
 
     public HistoricoAgendamento toEntity(HistoricoRequestDTO dto) {
         if (dto == null) return null;
@@ -46,19 +42,19 @@ public class HistoricoMapper {
         entity.setStatusAnterior(dto.getStatusAnterior());
         entity.setStatusAtual(dto.getStatusAtual());
 
-        if (dto.getAgendamentoId() != null) {
-            entity.setAgendamento(new Agendamento(dto.getAgendamentoId()));
+        if (dto.getIdAgendamento() != null) {
+            entity.setAgendamento(new Agendamento(dto.getIdAgendamento()));
         }
 
-        if (dto.getEmpresaId() != null) {
+        if (dto.getIdEmpresa() != null) {
             Empresa empresa = new Empresa();
-            empresa.setId(dto.getEmpresaId());
+            empresa.setId(dto.getIdEmpresa());
             entity.setEmpresa(empresa);
         }
 
-        if (dto.getUsuarioId() != null) {
+        if (dto.getIdUsuario() != null) {
             Usuario usuario = new Usuario();
-            usuario.setId(dto.getUsuarioId());
+            usuario.setId(dto.getIdUsuario());
             entity.setUsuario(usuario);
         }
         return entity;

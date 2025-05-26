@@ -6,11 +6,13 @@ import back.domain.dto.response.AgendamentosPorMesDTO;
 import back.domain.dto.response.HistoricoResponseDTO;
 import back.domain.mapper.HistoricoMapper;
 import back.domain.model.HistoricoAgendamento;
+import back.domain.repository.HistoricoRepository;
 import back.service.service.HistoricoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -28,28 +30,28 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.Path;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
+@AllArgsConstructor
 @RequestMapping("/historico")
 public class HistoricoController {
 
-    @Autowired
     private HistoricoService service;
-
-    @Autowired
     private HistoricoMapper mapper;
+    private HistoricoRepository historicoRepository;
 
-    @Operation(summary = "Salvar histórico", description = "Salvar histórico de agendamentos")
+    @Operation(summary = "Registrar histórico de agendamento", description = "Salva um novo registro no histórico de agendamento")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Histórico cadastrado com sucesso"),
-            @ApiResponse(responseCode = "400", description = "Erro ao cadastrar histórico")
+            @ApiResponse(responseCode = "201", description = "Histórico salvo com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Erro ao salvar histórico")
     })
-    @PostMapping("/cadastrar")
-    public ResponseEntity<?> cadastrarHistorico(@RequestBody @Valid HistoricoRequestDTO historicoRequest) {
-        HistoricoAgendamento historico = service.salvarHistorico(historicoRequest);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(historico);
+    @PostMapping("/historico")
+    public ResponseEntity<HistoricoResponseDTO> salvarHistorico(@RequestBody HistoricoRequestDTO dto) {
+        HistoricoResponseDTO response = service.salvarHistorico(dto);
+        return ResponseEntity.status(201).body(response);
     }
+
 
     @Operation(summary = "Obter histórico por período", description = "Obtém o histórico de agendamentos em um intervalo de tempo")
     @ApiResponses(value = {
@@ -101,15 +103,25 @@ public class HistoricoController {
             @ApiResponse(responseCode = "404", description = "Nenhum histórico encontrado para este agendamento")
     })
     @GetMapping("/agendamento/{idAgendamento}")
-    public ResponseEntity<List<HistoricoResponseDTO>> listarHistoricoPorAgendamento(
-            @PathVariable Integer idAgendamento) {
-        try {
-            List<HistoricoResponseDTO> response = service.listarHistoricoPorAgendamento(idAgendamento);
-            return ResponseEntity.ok(response);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(404).body(List.of());
+    public List<HistoricoResponseDTO> listarHistoricoPorAgendamento(Integer idAgendamento) {
+        List<HistoricoAgendamento> historicos = historicoRepository.findByAgendamentoId(idAgendamento);
+
+        if (historicos.isEmpty()) {
+            throw new RuntimeException("Nenhum histórico encontrado para este agendamento.");
         }
+
+        return historicos.stream()
+                .map(historico -> new HistoricoResponseDTO(
+                        historico.getId(),
+                        historico.getData(),
+                        historico.getStatusAnterior(),
+                        historico.getStatusAtual(),
+                        historico.getUsuario().getNome(),
+                        historico.getAgendamento().getFkServico().getNome()
+                ))
+                .collect(Collectors.toList());
     }
+
 
     @Operation(summary = "Listar agendamentos passados", description = "Lista todos os agendamentos do passado desde uma data específica até o momento atual")
     @ApiResponses(value = {

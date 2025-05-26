@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 @Data
 public class UsuarioRequestDTO {
 
-    private Integer id;
     private String nome;
     private String email;
     private String senha;
