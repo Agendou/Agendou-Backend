@@ -20,6 +20,7 @@ public class AgendamentoMapper {
         agendamento.setId(agendamentoRequestDTO.getId());
         agendamento.setData(agendamentoRequestDTO.getData());
         agendamento.setDescricao(agendamentoRequestDTO.getDescricao());
+        agendamento.setStatus(agendamentoRequestDTO.getStatus());
 
         if (agendamentoRequestDTO.getFkUsuario() != null) {
             Usuario usuario = new Usuario();

@@ -39,8 +39,6 @@ public class Usuario implements UserDetails {
     @Column(name = "role")
     private UsuarioRole role;
 
-    @OneToMany(mappedBy = "fkUsuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Agendamento> agendamentos;
 
     public Usuario(int i, String testUser, String email, String senha, String number, UsuarioRole usuarioRole) {
     }
