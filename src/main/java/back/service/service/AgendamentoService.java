@@ -242,7 +242,8 @@ public class AgendamentoService {
                 !agendamento.getData().equals(agendamentoRequest.getData()) ||
                         !agendamento.getFkServico().getId().equals(agendamentoRequest.getFkServicoId()) ||
                         !agendamento.getFkUsuario().getId().equals(agendamentoRequest.getFkUsuarioId()) ||
-                        !agendamento.getFkEmpresa().getId().equals(agendamentoRequest.getFkEmpresaId());
+                        !agendamento.getFkEmpresa().getId().equals(agendamentoRequest.getFkEmpresaId()) ||
+                        !agendamento.getDescricao().equals(agendamentoRequest.getDescricao());
 
         if (!houveMudanca) {
             return ResponseEntity.status(HttpStatus.NOT_MODIFIED).body("Nenhuma alteração detectada.");
@@ -258,6 +259,7 @@ public class AgendamentoService {
         agendamento.setFkUsuario(usuario);
         agendamento.setFkServico(servico);
         agendamento.setFkEmpresa(empresa);
+        agendamento.setDescricao(agendamentoRequest.getDescricao());
 
         // Primeiro histórico: registrar que o status foi alterado, para manter rastreabilidade da mudança
         historicoService.registrarHistorico(agendamento, statusAnterior, StatusAgendamento.ALTERADO);
