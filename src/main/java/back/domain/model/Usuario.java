@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
 import java.util.Collection;
 import java.util.List;
 
@@ -23,30 +24,34 @@ public class Usuario implements UserDetails {
     @Column(name = "id_usuario")
     private Integer id;
 
-    @Column(name = "nome")
+    @Column(name = "nome", nullable = false, length = 60)
     private String nome;
 
-    @Column(name = "telefone")
+    @Column(name = "telefone", nullable = false, length = 11)
     private String telefone;
 
-    @Column(name = "email")
+    @Column(name = "email", nullable = false, length = 45)
     private String email;
 
-    @Column(name = "senha")
+    @Column(name = "senha", nullable = false, length = 300)
     private String senha;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "role")
+    @Column(name = "role", nullable = false, length = 30)
     private UsuarioRole role;
 
-
-    public Usuario(int i, String testUser, String email, String senha, String number, UsuarioRole usuarioRole) {
+    public Usuario(int id, String nome, String email, String senha, String telefone, UsuarioRole role) {
+        this.id = id;
+        this.nome = nome;
+        this.email = email;
+        this.senha = senha;
+        this.telefone = telefone;
+        this.role = role;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if (this.role == UsuarioRole.USER) return List.of(new SimpleGrantedAuthority("ROLE_USER"));
-        return List.of();
+        return List.of(new SimpleGrantedAuthority("ROLE_" + this.role.name()));
     }
 
     @Override
@@ -70,7 +75,9 @@ public class Usuario implements UserDetails {
     }
 
     @Override
-    public boolean isCredentialsNonExpired() { return true; }
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
 
     @Override
     public boolean isEnabled() {

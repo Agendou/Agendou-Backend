@@ -3,16 +3,16 @@ package back.api.controller;
 
 import back.domain.dto.request.HistoricoRequestDTO;
 import back.domain.dto.response.AgendamentosPorMesDTO;
+import back.domain.dto.response.HistoricoAgendamentoDetalhadoResponseDTO;
 import back.domain.dto.response.HistoricoResponseDTO;
+import back.domain.enums.StatusAgendamento;
 import back.domain.mapper.HistoricoMapper;
 import back.domain.model.HistoricoAgendamento;
-import back.domain.repository.HistoricoRepository;
 import back.service.service.HistoricoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -25,33 +25,36 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.List;
-
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.Path;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @RestController
-@AllArgsConstructor
 @RequestMapping("/historico")
 public class HistoricoController {
 
+    @Autowired
     private HistoricoService service;
-    private HistoricoMapper mapper;
-    private HistoricoRepository historicoRepository;
 
-    @Operation(summary = "Registrar histórico de agendamento", description = "Salva um novo registro no histórico de agendamento")
+    @Operation(summary = "Obter todo o histórico", description = "Obtém todo o histórico de agendamentos")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Histórico salvo com sucesso"),
-            @ApiResponse(responseCode = "400", description = "Erro ao salvar histórico")
+            @ApiResponse(responseCode = "200", description = "Histórico obtido com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Erro ao obter histórico")
     })
-    @PostMapping("/historico")
-    public ResponseEntity<HistoricoResponseDTO> salvarHistorico(@RequestBody HistoricoRequestDTO dto) {
-        HistoricoResponseDTO response = service.salvarHistorico(dto);
-        return ResponseEntity.status(201).body(response);
+    @GetMapping("/listar")
+    public ResponseEntity<List<HistoricoAgendamentoDetalhadoResponseDTO>> obterTodoHistorico() {
+        List<HistoricoAgendamentoDetalhadoResponseDTO> historico = service.obterTodoHistorico();
+        return ResponseEntity.ok(historico);
     }
 
+    @Operation(summary = "Obter histórico por empresa", description = "Obtém o histórico de agendamentos de uma empresa específica")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Histórico obtido com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Erro ao obter histórico")
+    })
+    @GetMapping("/empresa/listar/{empresaId}")
+    public ResponseEntity<List<HistoricoAgendamentoDetalhadoResponseDTO>> obterHistoricoPorEmpresa(@PathVariable Integer empresaId) {
+        List<HistoricoAgendamentoDetalhadoResponseDTO> historico = service.obterHistoricoPorEmpresa(empresaId);
+        return ResponseEntity.ok(historico);
+    }
 
     @Operation(summary = "Obter histórico por período", description = "Obtém o histórico de agendamentos em um intervalo de tempo")
     @ApiResponses(value = {
@@ -59,9 +62,47 @@ public class HistoricoController {
             @ApiResponse(responseCode = "400", description = "Erro ao obter histórico")
     })
     @GetMapping("/por-periodo")
-    public ResponseEntity<List<HistoricoResponseDTO>> obterHistoricoPorPeriodo(@RequestParam("dataInicio") LocalDateTime dataInicio, @RequestParam("dataFim") LocalDateTime dataFim) {
-        List<HistoricoResponseDTO> historico = service.obterHistoricoPorPeriodo(dataInicio, dataFim);
+    public ResponseEntity<List<HistoricoResponseDTO>> obterHistoricoPorPeriodo(
+            @RequestParam("dataInicio") LocalDateTime dataInicio,
+            @RequestParam("dataFim") LocalDateTime dataFim,
+            @RequestParam("empresaId") Integer empresaId) {
+        List<HistoricoResponseDTO> historico = service.obterHistoricoPorPeriodo(dataInicio, dataFim, empresaId);
         return ResponseEntity.ok(historico);
+    }
+
+    @Operation(summary = "Obter total de agendamentos por mês", description = "Retorna o total de agendamentos agrupados por mês para uma empresa")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Dados obtidos com sucesso"),
+            @ApiResponse(responseCode = "500", description = "Erro ao processar os dados")
+    })
+    @GetMapping("/total-por-mes/empresa/{empresaId}")
+    public ResponseEntity<List<AgendamentosPorMesDTO>> obterTotalAgendamentosPorMes(
+            @PathVariable Integer empresaId) {
+        List<AgendamentosPorMesDTO> agendamentosPorMes = service.obterTotalAgendamentosPorMes(empresaId);
+        return ResponseEntity.ok(agendamentosPorMes);
+    }
+
+    @Operation(summary = "Quantidade de cancelamentos por empresa", description = "Retorna a quantidade total de cancelamentos registrados para uma empresa")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Quantidade de cancelamentos retornada com sucesso"),
+            @ApiResponse(responseCode = "500", description = "Erro ao calcular a quantidade")
+    })
+    @GetMapping("/cancelados/empresa/{empresaId}")
+    public ResponseEntity<Long> contarCanceladosPorEmpresa(@PathVariable Integer empresaId) {
+        Long totalCancelados = service.contarCanceladosPorEmpresa(empresaId);
+        return ResponseEntity.ok(totalCancelados);
+    }
+
+    @Operation(summary = "Salvar histórico", description = "Salvar histórico de agendamentos")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Histórico cadastrado com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Erro ao cadastrar histórico")
+    })
+    @PostMapping("/cadastrar")
+    public ResponseEntity<?> cadastrarHistorico(@RequestBody @Valid HistoricoRequestDTO historicoRequest) {
+        HistoricoAgendamento historico = service.salvarHistorico(historicoRequest);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(historico);
     }
 
     @Operation(summary = "Obter histórico por status", description = "Obtém o histórico de agendamentos por status")
@@ -70,31 +111,9 @@ public class HistoricoController {
             @ApiResponse(responseCode = "400", description = "Erro ao obter histórico")
     })
     @GetMapping("/por-status")
-    public ResponseEntity<List<HistoricoResponseDTO>> obterHistoricoPorStatus(@RequestParam("status") String status) {
+    public ResponseEntity<List<HistoricoResponseDTO>> obterHistoricoPorStatus(@RequestParam("status") StatusAgendamento status) {
         List<HistoricoResponseDTO> historico = service.obterHistoricoPorStatus(status);
         return ResponseEntity.ok(historico);
-    }
-
-    @Operation(summary = "Obter todo o histórico", description = "Obtém todo o histórico de agendamentos")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Histórico obtido com sucesso"),
-            @ApiResponse(responseCode = "400", description = "Erro ao obter histórico")
-    })
-    @GetMapping("/todos")
-    public ResponseEntity<List<HistoricoResponseDTO>> obterTodoHistorico() {
-        List<HistoricoResponseDTO> historico = service.obterTodoHistorico();
-        return ResponseEntity.ok(historico);
-    }
-
-    @Operation(summary = "Listar agendamentos futuros", description = "Lista todos os agendamentos futuros a partir de uma data específica")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Agendamentos obtidos com sucesso"),
-            @ApiResponse(responseCode = "400", description = "Data inválida fornecida")
-    })
-    @PostMapping("/agendamentos-futuros")
-    public ResponseEntity<List<HistoricoResponseDTO>> listarAgendamentosFuturos(@RequestBody LocalDateTime dataInicio) {
-        List<HistoricoResponseDTO> agendamentosFuturos = service.listarAgendamentosFuturos(dataInicio);
-        return ResponseEntity.ok(agendamentosFuturos);
     }
 
     @Operation(summary = "Listar histórico de agendamento", description = "Recupera todos os registros de histórico de um agendamento pelo ID do agendamento")
@@ -103,45 +122,25 @@ public class HistoricoController {
             @ApiResponse(responseCode = "404", description = "Nenhum histórico encontrado para este agendamento")
     })
     @GetMapping("/agendamento/{idAgendamento}")
-    public List<HistoricoResponseDTO> listarHistoricoPorAgendamento(Integer idAgendamento) {
-        List<HistoricoAgendamento> historicos = historicoRepository.findByAgendamentoId(idAgendamento);
-
-        if (historicos.isEmpty()) {
-            throw new RuntimeException("Nenhum histórico encontrado para este agendamento.");
+    public ResponseEntity<List<HistoricoResponseDTO>> listarHistoricoPorAgendamento(
+            @PathVariable Integer idAgendamento) {
+        try {
+            List<HistoricoResponseDTO> response = service.listarHistoricoPorAgendamento(idAgendamento);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(404).body(List.of());
         }
-
-        return historicos.stream()
-                .map(historico -> new HistoricoResponseDTO(
-                        historico.getId(),
-                        historico.getData(),
-                        historico.getStatusAnterior(),
-                        historico.getStatusAtual(),
-                        historico.getUsuario().getNome(),
-                        historico.getAgendamento().getFkServico().getNome()
-                ))
-                .collect(Collectors.toList());
     }
 
-
-    @Operation(summary = "Listar agendamentos passados", description = "Lista todos os agendamentos do passado desde uma data específica até o momento atual")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Agendamentos obtidos com sucesso"),
-            @ApiResponse(responseCode = "400", description = "Data inválida fornecida")
-    })
-    @PostMapping("/agendamentos-passados")
-    public ResponseEntity<List<HistoricoResponseDTO>> listarAgendamentosPassados(@RequestBody LocalDateTime dataInicio) {
-        List<HistoricoResponseDTO> agendamentosPassados = service.listarAgendamentosPassados(dataInicio);
-        return ResponseEntity.ok(agendamentosPassados);
-    }
-
-    @Operation(summary = "Obter usuários ativos", description = "Obtém a lista de usuários que possuem 4 ou mais agendamentos em um intervalo de 2 meses")
+    @Operation(summary = "Obter usuários ativos",
+            description = "Obtém a lista de usuários com 4 ou mais agendamentos ativos em 2 meses, filtrando por empresa")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Usuários ativos obtidos com sucesso"),
             @ApiResponse(responseCode = "404", description = "Nenhum usuário encontrado no período")
     })
-    @GetMapping("/usuarios-ativos")
-    public ResponseEntity<List<String>> obterUsuariosAtivos() {
-        List<String> usuariosAtivos = service.buscarUsuariosAtivos();
+    @GetMapping("/usuarios-ativos/{empresaId}")
+    public ResponseEntity<List<String>> obterUsuariosAtivos(@PathVariable Integer empresaId) {
+        List<String> usuariosAtivos = service.buscarUsuariosAtivos(empresaId);
 
         if (usuariosAtivos.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(usuariosAtivos);
@@ -149,55 +148,6 @@ public class HistoricoController {
 
         return ResponseEntity.ok(usuariosAtivos);
     }
-
-    @Operation(summary = "Obter agendamentos do último mês", description = "Retorna o total de agendamentos e o intervalo do mês anterior")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Agendamentos do último mês retornados com sucesso"),
-            @ApiResponse(responseCode = "404", description = "Nenhum agendamento encontrado no último mês")
-    })
-    @GetMapping("/agendamentos-ultimo-mes")
-    public ResponseEntity<Map<String, Object>> obterAgendamentosUltimoMes() {
-        List<HistoricoResponseDTO> agendamentos = service.obterAgendamentosUltimoMes();
-
-        if (agendamentos.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(
-                    "mensagem", "Nenhum agendamento encontrado no último mês",
-                    "dataInicio", LocalDate.now().minusMonths(1).withDayOfMonth(1),
-                    "dataFim", LocalDate.now().minusMonths(1).with(TemporalAdjusters.lastDayOfMonth())
-            ));
-        }
-
-        return ResponseEntity.ok(Map.of(
-                "agendamentos", agendamentos,
-                "dataInicio", LocalDate.now().minusMonths(1).withDayOfMonth(1),
-                "dataFim", LocalDate.now().minusMonths(1).with(TemporalAdjusters.lastDayOfMonth())
-        ));
-    }
-
-
-    @Operation(summary = "Quantidade de cancelamentos", description = "Retorna a quantidade total de cancelamentos registrados")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Quantidade de cancelamentos retornada com sucesso"),
-            @ApiResponse(responseCode = "500", description = "Erro ao calcular a quantidade")
-    })
-    @GetMapping("/cancelados")
-    public ResponseEntity<Long> contarCancelados() {
-        Long totalCancelados = service.contarCancelados();
-        return ResponseEntity.ok(totalCancelados);
-    }
-
-
-    @Operation(summary = "Obter total de agendamentos por mês", description = "Retorna o total de agendamentos agrupados por mês")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Dados obtidos com sucesso"),
-            @ApiResponse(responseCode = "500", description = "Erro ao processar os dados")
-    })
-    @GetMapping("/total-por-mes")
-    public ResponseEntity<List<AgendamentosPorMesDTO>> obterTotalAgendamentosPorMes() {
-        List<AgendamentosPorMesDTO> agendamentosPorMes = service.obterTotalAgendamentosPorMes();
-        return ResponseEntity.ok(agendamentosPorMes);
-    }
-
 
     @GetMapping("/csv")
     public ResponseEntity<byte[]> downloadCsv(
@@ -221,5 +171,4 @@ public class HistoricoController {
             throw new RuntimeException("Erro ao gerar CSV: " + e.getMessage(), e);
         }
     }
-
 }

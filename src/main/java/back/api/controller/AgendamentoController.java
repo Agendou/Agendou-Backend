@@ -3,11 +3,10 @@ package back.api.controller;
 import back.domain.dto.request.AgendamentoRequestDTO;
 
 import back.domain.dto.response.AgendamentoResponseDTO;
-
 import back.domain.model.Agendamento;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import back.service.service.AgendamentoService;
@@ -17,7 +16,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-import java.util.ArrayList;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -45,7 +44,7 @@ public class AgendamentoController {
     })
     @PutMapping("/atualizar/{id}")
     public ResponseEntity<?> atualizarAgendamento(@PathVariable Integer id, @RequestBody @Valid AgendamentoRequestDTO agendamento) {
-        return service.atualizarAgendamento(id, agendamento);
+        return service.atualizarAgendamento(id,agendamento);
     }
 
     @Operation(summary = "Remover agendamento", description = "Remove um agendamento existente")
@@ -58,7 +57,9 @@ public class AgendamentoController {
         return service.removerAgendamento(id);
     }
 
-    @Operation(summary = "Listar agendamentos cadastrados ativos", description = "Lista todos os agendamentos com status ativo cadastrados no sistema, sem filtro.")
+    @Operation(
+            summary = "Listar agendamentos cadastrados ativos",
+            description = "Lista todos os agendamentos com status ativo cadastrados no sistema, sem filtro.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Agendamentos listados com sucesso",
                     content = @Content(mediaType = "application/json",
@@ -82,31 +83,14 @@ public class AgendamentoController {
         return ResponseEntity.status(200).body(service.listarAgendamentosPorEmpresa(id));
     }
 
-    @Operation(summary = "Busca por usuários ativos no sistema", description = "Busca todos os usuários ativos no sistema com base em agendamentos dentro de um período de tempo.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = " Usuários ativos encontrados com sucesso",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Agendamento.class))),
-            @ApiResponse(responseCode = "400", description = "Erro ao listar agendamentos")
-    })
-    @GetMapping("/usuarios-ativos")
-    public ResponseEntity<List<Integer>> buscarUsuariosAtivos() {
-        try {
-            List<Integer> usuariosAtivos = service.buscarUsuariosAtivos();
-            return ResponseEntity.ok(usuariosAtivos);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ArrayList<>());
-        }
-    }
-
     @Operation(summary = "Obter quantidade de agendamentos por mês", description = "Retorna a quantidade de agendamentos por mês")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Dados retornados com sucesso"),
             @ApiResponse(responseCode = "400", description = "Erro na requisição")
     })
-    @GetMapping("/agendamentos-por-mes")
-    public Map<String, Long> getAgendamentosPorMes() {
-        return service.buscarAgendamentosPorMes();
+    @GetMapping("/empresa/agendamentos-por-mes/{empresaId}")
+    public Map<String, Long> getAgendamentosPorMesPorEmpresa(@PathVariable Integer empresaId) {
+        return service.buscarAgendamentosPorMes(empresaId);
     }
 
     @Operation(summary = "Listar agendamento pelo id", description = "Lista as informações do agendamento pelo id.")
@@ -121,48 +105,47 @@ public class AgendamentoController {
         return service.buscarAgendamentoPorId(id);
     }
 
-
-    @Operation(summary = "Listar agendamentos por mês atual ou último", description = "Lista os agendamentos do mês atual ou do último mês.")
+    @Operation(summary = "Listar agendamentos de uma empresa no último mês ou atual", description = "Lista agendamentos de uma empresa no último mês/mês atual..")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Agendamentos listados com sucesso",
+            @ApiResponse(responseCode = "200", description = "Agendamentos recuperados.",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = AgendamentoResponseDTO.class))),
-            @ApiResponse(responseCode = "400", description = "Erro ao listar agendamentos")
+                            schema = @Schema(implementation = Agendamento.class))),
+            @ApiResponse(responseCode = "400", description = "Erro na requisição")
     })
-    @GetMapping("/mes-atual-ou-ultimo")
-    public ResponseEntity<List<AgendamentoResponseDTO>> listarAgendamentosPorMesAtualOuUltimo() {
-        List<AgendamentoResponseDTO> agendamentos = service.listarAgendamentosPorMesAtualOuUltimo();
+    @GetMapping("/empresa/mes-atual-ou-ultimo/{empresaId}")
+    public ResponseEntity<List<AgendamentoResponseDTO>> listarAgendamentosPorMesAtualOuUltimo(@PathVariable Integer empresaId) {
+        List<AgendamentoResponseDTO> agendamentos = service.listarAgendamentosPorMesAtualOuUltimo(empresaId);
         return ResponseEntity.ok(agendamentos);
     }
 
-    @Operation(summary = "Listar serviços mais requisitados", description = "Lista os serviços mais requisitados com base nos agendamentos.")
+    @Operation(summary = "Listar os serviços mais requisitados filtrados por uma empresa.", description = "Lista os serviços mais requisitados de uma empresa específica.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Serviços listados com sucesso",
+            @ApiResponse(responseCode = "200", description = "Serviços mais requisitados recuperados.",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Map.class))),
-            @ApiResponse(responseCode = "400", description = "Erro ao listar serviços")
+                            schema = @Schema(implementation = Agendamento.class))),
+            @ApiResponse(responseCode = "400", description = "Erro na requisição")
     })
-    @GetMapping("/servicos-mais-requisitados")
-    public ResponseEntity<List<Map<String, Object>>> getServicosMaisRequisitados() {
-        List<Map<String, Object>> servicos = service.buscarServicosMaisRequisitados();
+    @GetMapping("/empresa/servicos-mais-requisitados/{empresaId}")
+    public ResponseEntity<List<Map<String, Object>>> getServicosMaisRequisitados(@PathVariable Integer empresaId) {
+        List<Map<String, Object>> servicos = service.buscarServicosMaisRequisitados(empresaId);
         return ResponseEntity.ok(servicos);
     }
 
-    @Operation(summary = "Listar horários de pico", description = "Lista os horários de pico com base nos agendamentos.")
+    @Operation(summary = "Listar os horários de pico de agendamento em uma empresa.", description = "Listar os horários de pico de agendamento em uma empresa específica.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Horários de pico listados com sucesso",
+            @ApiResponse(responseCode = "200", description = "Horários de pico recuperados.",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = List.class))),
-            @ApiResponse(responseCode = "400", description = "Erro ao listar horários de pico")
+                            schema = @Schema(implementation = Agendamento.class))),
+            @ApiResponse(responseCode = "400", description = "Erro na requisição")
     })
-    @GetMapping("/horarios-pico")
-    public List<Object[]> getHorariosPico() {
-        return service.buscarHorariosPico();
+    @GetMapping("/empresa/horarios-pico/{empresaId}")
+    public List<Object[]> getHorariosPico(@PathVariable Integer empresaId) {
+        return service.buscarHorariosPico(empresaId);
     }
 
     @Operation(summary = "Listar agendamentos por usuário", description = "Lista todos os agendamentos ativos (não cancelados) de um usuário específico.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Agendamentos listados com sucesso",
+            @ApiResponse(responseCode = "200", description = "Agendamentos filtrados pelo usuário com sucesso",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = AgendamentoResponseDTO.class))),
             @ApiResponse(responseCode = "400", description = "Erro ao listar agendamentos")
@@ -170,5 +153,42 @@ public class AgendamentoController {
     @GetMapping("/usuario/{id}")
     public ResponseEntity<List<AgendamentoResponseDTO>> listarAgendamentosPorUsuario(@PathVariable Integer id) {
         return ResponseEntity.ok(service.listarAgendamentosPorUsuario(id));
+    }
+
+    @Operation(summary = "Listar os ganhos previstos dos serviços agendados/realizados em uma empresa", description = "Lista o valor total dos ganhos previstos dos serviços agendados/realizados de uma empresa específica.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ganhos previstos recuperados com sucesso",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = AgendamentoResponseDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Erro ao listar os ganhos recuperados.")
+    })
+    @GetMapping("/empresa/ganhos/{id}")
+    public ResponseEntity<BigDecimal> calcularGanhoPorEmpresa(@PathVariable Integer id) {
+        return ResponseEntity.ok(service.calcularGanhoTotalPorEmpresa(id));
+    }
+
+    @Operation(summary = "Buscar os novos clientes do mês atual filtrados por empresa", description = "Exibe o total de novos clientes do mês atual filtrados por empresa.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Novos clientes recuperados com sucesso",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = AgendamentoResponseDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Erro ao listar novos clientes de uma empresa")
+    })
+    @GetMapping("/empresa/novos-clientes-mes-atual/{id}")
+    public ResponseEntity<Long> getNovosClientesDoMes(@PathVariable Integer id) {
+        Long total = service.contarNovosClientesMesAtualPorEmpresa(id);
+        return ResponseEntity.ok(total);
+    }
+
+    @Operation(summary = "Confirmar o atendimento do agendamento, alterando seu status agendamento e registrando histórico", description = "Altera o status agendamento do agendamento para REALIZADO e registra o histórico do agendamento.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Agendamento confirmado com sucesso",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = AgendamentoResponseDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Erro ao confirmar agendamento"),
+    })
+    @PutMapping("/confirmar/{id}")
+    public ResponseEntity<?> confirmarAtendimento(@PathVariable Integer id) {
+        return service.confirmarAtendimento(id);
     }
 }

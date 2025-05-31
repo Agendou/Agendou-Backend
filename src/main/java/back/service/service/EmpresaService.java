@@ -118,6 +118,10 @@ public class EmpresaService {
 
         repository.save(empresa);
 
+        logger.info("Empresa atualizada com sucesso: " + empresa.getEmail());
+
+        System.out.println("empresa: " + empresa.getEmail());
+
         return ResponseEntity.status(200).body(mapper.toEmpresaResponseDto(empresa));
     }
 
@@ -132,6 +136,10 @@ public class EmpresaService {
         Empresa empresa = empresaExistente.get();
         EmpresaResponseDTO responseDTO = mapper.toEmpresaResponseDto(empresa);
 
+        logger.info("Empresa encontrada com sucesso: " + responseDTO);
+
+        System.out.println("empresa: " + empresa.getEmail());
+
         return ResponseEntity.status(200).body(responseDTO);
     }
 
@@ -145,6 +153,7 @@ public class EmpresaService {
         }
         Empresa empresa = empresaExistente.get();
         logger.info("Empresa deletada com sucesso: " + empresa.getEmail());
+        System.out.println("empresa: " + empresa.getEmail());
         repository.delete(empresa);
 
         return ResponseEntity.status(200).body(empresa);

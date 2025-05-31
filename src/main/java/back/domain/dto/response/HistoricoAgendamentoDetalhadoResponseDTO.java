@@ -2,8 +2,6 @@ package back.domain.dto.response;
 
 import lombok.*;
 
-import java.time.LocalDateTime;
-
 @Setter
 @Getter
 @AllArgsConstructor

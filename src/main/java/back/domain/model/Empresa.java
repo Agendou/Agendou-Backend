@@ -30,14 +30,14 @@ public class Empresa implements UserDetails {
     @Column(name = "representante")
     private String representante;
 
+    @Column(name = "telefone")
+    private String telefone;
+
     @Column(name = "email")
     private String email;
 
     @Column(name = "senha")
     private String senha;
-
-    @Column(name = "telefone")
-    private String telefone;
 
     @Column(name = "cnpj")
     private String cnpj;
@@ -48,8 +48,13 @@ public class Empresa implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if (this.role == EmpresaRole.ADMIN) return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
-        else return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        if (this.role == EmpresaRole.ADMIN) {
+            return List.of(
+                    new SimpleGrantedAuthority("ROLE_ADMIN"),
+                    new SimpleGrantedAuthority("ROLE_USER")
+            );
+        }
+        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
     }
 
     @Override
@@ -79,4 +84,5 @@ public class Empresa implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
 }

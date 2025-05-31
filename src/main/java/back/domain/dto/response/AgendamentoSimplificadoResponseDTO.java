@@ -3,7 +3,6 @@ package back.domain.dto.response;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import back.domain.enums.StatusAgendamento;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,8 +24,5 @@ public class AgendamentoSimplificadoResponseDTO {
 
         DateTimeFormatter horaFormatter = DateTimeFormatter.ofPattern("HH:mm");
         this.hora = dataHora.format(horaFormatter);
-    }
-
-    public AgendamentoSimplificadoResponseDTO(Integer id, LocalDateTime data, String nome, StatusAgendamento status) {
     }
 }

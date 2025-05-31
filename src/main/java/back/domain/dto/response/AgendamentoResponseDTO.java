@@ -1,6 +1,5 @@
 package back.domain.dto.response;
 
-import back.domain.enums.StatusAgendamento;
 import back.domain.model.Empresa;
 import back.domain.model.Servico;
 import back.domain.model.Usuario;
@@ -18,7 +17,7 @@ public class AgendamentoResponseDTO {
         private Integer id;
         private LocalDateTime data;
         private String descricao;
-        private StatusAgendamento status;
+        private String status;
         private Usuario fkUsuario;
         private Servico fkServico;
         private Empresa fkEmpresa;

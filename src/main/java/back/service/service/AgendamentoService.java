@@ -1,11 +1,13 @@
 package back.service.service;
 
+import back.domain.utils.Helper;
 import back.domain.dto.request.AgendamentoRequestDTO;
 import back.domain.dto.response.*;
 import back.domain.enums.StatusAgendamento;
 import back.domain.mapper.AgendamentoMapper;
 import back.domain.model.*;
 import back.domain.repository.*;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
@@ -15,7 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDate;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -26,136 +28,93 @@ public class AgendamentoService {
 
     private final AgendamentoRepository repository;
     private final AgendamentoMapper mapper;
-    private final ServicoRepository servicoRepository;
-    private final EmpresaRepository empresaRepository;
+    private final HistoricoService historicoService;
     private final UsuarioRepository usuarioRepository;
+    private final Helper helper;
 
     private static final Logger logger = LoggerFactory.getLogger(AgendamentoService.class);
     private final HistoricoRepository historicoRepository;
 
     public ResponseEntity<?> agendar(AgendamentoRequestDTO agendamentoRequest) {
+        logger.info("[AgendamentoService] Cadastrando agendamento com request dto: {}", agendamentoRequest);
 
-        if (repository.findByData(agendamentoRequest.getData()).isPresent()) {
+        if (repository.findByDataAndStatusNot(agendamentoRequest.getData(), StatusAgendamento.CANCELADO).isPresent()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Horário já agendado");
         }
 
-        Usuario usuario = usuarioRepository.findById(agendamentoRequest.getFkUsuario())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
+        if (agendamentoRequest.getFkUsuarioId() == null || agendamentoRequest.getFkServicoId() == null || agendamentoRequest.getFkEmpresaId() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Campos obrigatórios não preenchidos.");
+        }
 
-        Servico servico = servicoRepository.findById(agendamentoRequest.getFkServico())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Serviço não encontrado"));
+        if (agendamentoRequest.getData().isBefore(LocalDateTime.now())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Data do agendamento não pode ser no passado.");
+        }
 
-        Empresa empresa = empresaRepository.findById(agendamentoRequest.getFkEmpresa())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Empresa não encontrada"));
+        Usuario usuario = helper.buscarUsuario(agendamentoRequest.getFkUsuarioId());
+        Servico servico = helper.buscarServico(agendamentoRequest.getFkServicoId());
+        Empresa empresa = helper.buscarEmpresa(agendamentoRequest.getFkEmpresaId());
 
         Agendamento agendamento = mapper.toEntity(agendamentoRequest);
         agendamento.setFkUsuario(usuario);
         agendamento.setFkServico(servico);
         agendamento.setFkEmpresa(empresa);
+        agendamento.setStatus(StatusAgendamento.AGENDADO);
 
         Agendamento agendamentoSalvo = repository.save(agendamento);
 
-        HistoricoAgendamento historico = new HistoricoAgendamento();
-        historico.setData(agendamentoSalvo.getData());
-        historico.setStatusAnterior(StatusAgendamento.AGENDADO);
-        historico.setStatusAtual(agendamentoSalvo.getStatus());
+        historicoService.registrarHistorico(agendamentoSalvo, StatusAgendamento.AGENDADO, StatusAgendamento.AGENDADO);
 
-        historico.setAgendamento(agendamentoSalvo);
-        historico.setEmpresa(agendamentoSalvo.getFkEmpresa());
-        historico.setUsuario(agendamentoSalvo.getFkUsuario());
+        AgendamentoResponseDTO agendamentoResponseDTO = mapper.toAgendamentoResponseDto(agendamentoSalvo);
 
-        historicoRepository.save(historico);
-
-
-        historicoRepository.save(historico);
-
-        AgendamentoResponseDTO responseDTO = mapper.toAgendamentoResponseDto(agendamentoSalvo);
-
-        if (responseDTO == null) {
-            logger.error("Falha ao cadastrar o Agendamento");
+        if (agendamentoResponseDTO == null) {
+            logger.error("[AgendamentoService] Falha ao cadastrar o Agendamento");
             return ResponseEntity.status(400).build();
         }
 
-        logger.info("Agendamento cadastrado com sucesso: " + responseDTO);
+        logger.info("[AgendamentoService] Agendamento cadastrado com sucesso: " + agendamentoResponseDTO);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(responseDTO);
+                .body(agendamentoResponseDTO);
+    }
+
+    public Long contarNovosClientesMesAtualPorEmpresa(Integer empresaId) {
+        logger.info("[AgendamentoService] Calculando novos clientes no mês atual para empresa ID: {}", empresaId);
+
+        LocalDateTime inicioDoMes = LocalDateTime.now().withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
+        LocalDateTime fimDoMes = inicioDoMes.plusMonths(1).minusNanos(1);
+
+        Long totalNovosClientes = repository.countNovosClientesPorEmpresa(empresaId, inicioDoMes, fimDoMes);
+
+        logger.info("[AgendamentoService] Total de novos clientes no mês: {}", totalNovosClientes);
+        return totalNovosClientes != null ? totalNovosClientes : 0L;
     }
 
 
+    public BigDecimal calcularGanhoTotalPorEmpresa(Integer empresaId) {
+        logger.info("[AgendamentoService] Calculando ganho total da empresa ID: {}", empresaId);
+        BigDecimal total = repository.calcularGanhoTotalPorEmpresa(
+                StatusAgendamento.AGENDADO,
+                StatusAgendamento.REALIZADO,
+                empresaId
+        );
+        logger.info("[AgendamentoService] Ganho total da empresa ID: {}", total);
+        return total != null ? total : BigDecimal.ZERO;
+    }
+
+    //lista os agendamentos do usuário filtrando pelo id do usuário
     public List<AgendamentoResponseDTO> listarAgendamentosPorUsuario(Integer usuarioId) {
-        List<Agendamento> agendamentos = repository.findAllByFkUsuarioId(usuarioId);
+        logger.info("[AgendamentoService] Iniciando busca de agendamentos para o usuário com ID: {}", usuarioId);
+        List<Agendamento> agendamentos = repository.findByFkUsuarioIdAndStatusNot(usuarioId, StatusAgendamento.CANCELADO);
+        logger.info("[AgendamentoService] Total de agendamentos encontrados para o usuário {}: {}", usuarioId, agendamentos.size());
         return agendamentos.stream()
                 .map(mapper::toAgendamentoResponseDto)
                 .collect(Collectors.toList());
     }
 
-
-    public List<AgendamentoResponseDTO> listarAgendamentosPorEmpresa(Integer idEmpresa) {
-        Empresa empresa = empresaRepository.findById(idEmpresa)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Empresa não encontrada"));
-
-        List<Agendamento> agendamentosAtivos = repository.findByFkEmpresaIdAndStatus(idEmpresa, StatusAgendamento.AGENDADO);
-
-        return agendamentosAtivos.stream()
-                .map(mapper::toAgendamentoResponseDto)
-                .collect(Collectors.toList());
-    }
-
-    public Map<String, Long> buscarAgendamentosPorMes() {
-        List<Agendamento> agendamentos = repository.findAll();
-
-        return agendamentos.stream()
-                .collect(Collectors.groupingBy(
-                        agendamento -> {
-                            LocalDate data = agendamento.getData().toLocalDate();
-                            return String.format("%02d/%d", data.getMonthValue(), data.getYear());
-                        },
-                        Collectors.counting()
-                ));
-    }
-
-    public List<Map<String, Object>> buscarServicosMaisRequisitados() {
-        List<Agendamento> agendamentos = repository.findAll();
-
-        Map<String, Long> contagemPorServico = agendamentos.stream()
-                .collect(Collectors.groupingBy(
-                        a -> a.getFkServico().getNome(),
-                        Collectors.counting()
-                ));
-
-        return contagemPorServico.entrySet().stream()
-                .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
-                .limit(5)
-                .map(entry -> {
-                    Map<String, Object> mapa = new HashMap<>();
-                    mapa.put("nomeServico", entry.getKey());
-                    mapa.put("quantidade", entry.getValue());
-                    return mapa;
-                })
-                .collect(Collectors.toList());
-    }
-
-    public List<Object[]> buscarHorariosPico() {
-        List<Agendamento> agendamentos = repository.findAll();
-
-        Map<String, Long> contagemPorHorario = agendamentos.stream()
-                .limit(5)
-                .collect(Collectors.groupingBy(
-                        a -> a.getData().toLocalTime().withMinute(0).withSecond(0).toString(),
-                        Collectors.counting()
-                ));
-
-        return contagemPorHorario.entrySet().stream()
-                .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
-                .map(entry -> new Object[]{entry.getKey(), entry.getValue()})
-                .collect(Collectors.toList());
-    }
-
-
-    public Map<String, Long> getAgendamentosPorMes() {
-        List<Object[]> resultados = repository.findAgendamentosPorMes();
+    public Map<String, Long> buscarAgendamentosPorMes(Integer empresaId) {
+        logger.info("[AgendamentoService] Iniciando busca de agendamentos por mês para a empresa ID: {}...", empresaId);
+        List<Object[]> resultados = repository.findAgendamentosPorMesPorEmpresa(empresaId);
 
         Map<String, Long> agendamentosPorMes = new HashMap<>();
         String[] meses = {"Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"};
@@ -165,158 +124,165 @@ public class AgendamentoService {
             Long total = (Long) resultado[1];
             agendamentosPorMes.put(meses[mesIndex], total);
         }
+        logger.info("[AgendamentoService] Agendamentos por mês para empresa {}: {}", empresaId, agendamentosPorMes);
 
         return agendamentosPorMes;
     }
 
-    public List<Map<String, Object>> getServicosMaisRequisitados() {
-        List<Object[]> results = repository.findServicosMaisRequisitados();
+    public List<Map<String, Object>> buscarServicosMaisRequisitados(Integer empresaId) {
+        logger.info("[AgendamentoService] Iniciando busca de total de serviços mais requisitados para empresa com id: {}", empresaId);
+        List<Object[]> results = repository.findServicosMaisRequisitadosPorEmpresa(empresaId);
         List<Map<String, Object>> servicos = new ArrayList<>();
 
         for (Object[] result : results) {
             Map<String, Object> servicoData = new HashMap<>();
             servicoData.put("nome", result[0]);
-            servicoData.put("quantidade", result[1]);
+            servicoData.put("valor", result[1]);
+            servicoData.put("quantidade", result[2]);
             servicos.add(servicoData);
         }
 
+        logger.info("[AgendamentoService] Serviços mais requisitados recuperados com sucesso: {}", servicos);
         return servicos;
     }
 
+    //Lista todos os agendamentos ativos cadastrados (sem filtros)
     public List<AgendamentoResponseDTO> listarAgendamentos() {
-        List<Agendamento> agendamentos = repository.findAll();
+        logger.info("[AgendamentoService] Iniciando busca de agendamentos...");
+        List<Agendamento> agendamentos = repository.findByStatusNot(StatusAgendamento.CANCELADO);
+        logger.info("[AgendamentoService] Total de agendamentos encontrados: {}", agendamentos.size());
         return agendamentos.stream()
                 .map(mapper::toAgendamentoResponseDto)
                 .collect(Collectors.toList());
     }
 
-    public List<AgendamentoResponseDTO> listarAgendamentosPorMesAtualOuUltimo() {
-        LocalDateTime now = LocalDateTime.now();
-
-        LocalDateTime inicioMesAtual = now.withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
-        LocalDateTime fimMesAtual = now.withDayOfMonth(now.toLocalDate().lengthOfMonth()).withHour(23).withMinute(59).withSecond(59).withNano(999999999);
-
-        List<Agendamento> agendamentosDoMesAtual = repository.findByDataBetween(inicioMesAtual, fimMesAtual);
-
-        if (agendamentosDoMesAtual.isEmpty()) {
-            LocalDateTime inicioUltimoMes = inicioMesAtual.minusMonths(1);
-            LocalDateTime fimUltimoMes = inicioMesAtual.minusDays(1).withHour(23).withMinute(59).withSecond(59).withNano(999999999);
-
-            agendamentosDoMesAtual = repository.findByDataBetween(inicioUltimoMes, fimUltimoMes);
-        }
-        return agendamentosDoMesAtual.stream()
+    //Lista todos os agendamentos ativos filtrados pelo id da empresa
+    public List<AgendamentoResponseDTO> listarAgendamentosPorEmpresa(Integer id) {
+        logger.info("[AgendamentoService] Iniciando busca de agendamentos para a empresa com ID: {}", id);
+        List<Agendamento> agendamentos = repository.findByFkEmpresaIdAndStatusNot(id, StatusAgendamento.CANCELADO);
+        logger.info("[AgendamentoService] Total de agendamentos encontrados para a empresa {}: {}", id, agendamentos.size());
+        return agendamentos.stream()
                 .map(mapper::toAgendamentoResponseDto)
                 .collect(Collectors.toList());
     }
 
-    public List<Object[]> getHorariosPico() {
-        return repository.findHorariosPico();
+    public List<AgendamentoResponseDTO> listarAgendamentosPorMesAtualOuUltimo(Integer empresaId) {
+        logger.info("[AgendamentoService] Iniciando busca de agendamentos do último mês ou mês atual para empresa ID: {}", empresaId);
+        LocalDateTime agora = LocalDateTime.now();
+
+        LocalDateTime inicioMesAtual = agora.withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
+        LocalDateTime fimMesAtual = agora.withDayOfMonth(agora.toLocalDate().lengthOfMonth()).withHour(23).withMinute(59).withSecond(59).withNano(999_999_999);
+
+        List<Agendamento> agendamentos = repository.findByFkEmpresaIdAndDataBetweenAndStatusNot(
+                empresaId, inicioMesAtual, fimMesAtual, StatusAgendamento.CANCELADO
+        );
+
+        if (agendamentos.isEmpty()) {
+            LocalDateTime inicioUltimoMes = inicioMesAtual.minusMonths(1);
+            LocalDateTime fimUltimoMes = inicioMesAtual.minusDays(1).withHour(23).withMinute(59).withSecond(59).withNano(999_999_999);
+
+            agendamentos = repository.findByFkEmpresaIdAndDataBetweenAndStatusNot(
+                    empresaId, inicioUltimoMes, fimUltimoMes, StatusAgendamento.CANCELADO
+            );
+        }
+        logger.info("[AgendamentoService] Total de agendamentos encontrados: {}", agendamentos.size());
+
+        return agendamentos.stream()
+                .map(mapper::toAgendamentoResponseDto)
+                .collect(Collectors.toList());
     }
 
+    public List<Object[]> buscarHorariosPico(Integer empresaId) {
+        logger.info("[AgendamentoService] Iniciando busca de total de horários mais requisitados...");
+        List<Object[]> horariosPico = repository.findHorariosPicoPorEmpresa(empresaId);
+        logger.info("[AgendamentoService] Horários mais requisitados/horários de pico recuperados com sucesso: {}", horariosPico);
+        return horariosPico;
+    }
 
     public ResponseEntity<?> buscarAgendamentoPorId(Integer id) {
-        Optional<Agendamento> agendamentoExistente = repository.findById(id);
+        logger.info("[AgendamentoService] Buscando agendamento com id: {}", id);
+        Optional<Agendamento> agendamentoOpcional = repository.findByIdAndStatusNot(id, StatusAgendamento.CANCELADO);
 
-        if (agendamentoExistente.isEmpty()) {
-            logger.error("Empresa com id " + id + " não encontrado");
-            return ResponseEntity.status(404).body("Empresa não encontrado");
+        if (agendamentoOpcional.isEmpty()) {
+            logger.error("Agendamento não encontrado ou cancelado com id" + id);
+            return ResponseEntity.status(404).body("Agendamento não encontrado ou foi cancelado.");
         }
 
-        Agendamento agendamento = agendamentoExistente.get();
+        Agendamento agendamento = agendamentoOpcional.get();
         AgendamentoResponseDTO responseDTO = mapper.toAgendamentoResponseDto(agendamento);
+
+        logger.info("[AgendamentoService] Buscando agendamento com id: {}", id);
 
         return ResponseEntity.status(200).body(responseDTO);
     }
 
-
-    public List<Integer> buscarUsuariosAtivos() {
-        LocalDateTime dataInicio = LocalDateTime.now().minusMonths(1);
-        LocalDateTime dataFim = LocalDateTime.now();
-
-        List<Integer> usuariosAtivos = new ArrayList<>();
-
-        List<Usuario> listaDeUsuarios = usuarioRepository.findAll();
-
-        for (Usuario usuario : listaDeUsuarios) {
-            Long agendamentos = repository.countAgendamentosPorUsuarioNoPeriodo(usuario.getId(), dataInicio, dataFim);
-
-            if (agendamentos != null && agendamentos > 5) {
-                usuariosAtivos.add(usuario.getId());
-            }
-        }
-
-        return usuariosAtivos;
-    }
-
-
     @Transactional
     public ResponseEntity<?> atualizarAgendamento(Integer id, AgendamentoRequestDTO agendamentoRequest) {
-        Optional<Agendamento> agendamentoExistente = repository.findById(id);
+        logger.info("[AgendamentoService] Atualizando agendamento com id: {}", id);
+        Optional<Agendamento> agendamentoExistente = repository.findByIdAndStatusNot(id, StatusAgendamento.CANCELADO);
 
         if (agendamentoExistente.isEmpty()) {
             logger.error("Falha ao atualizar o agendamento");
             return ResponseEntity.status(404).body("Agendamento não encontrado.");
         }
 
+        if (agendamentoRequest.getFkUsuarioId() == null ||
+                agendamentoRequest.getFkServicoId() == null ||
+                agendamentoRequest.getFkEmpresaId() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Campos obrigatórios não preenchidos.");
+        }
+
+        if (agendamentoRequest.getData().isBefore(LocalDateTime.now())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Data do agendamento não pode ser no passado.");
+        }
+
         Agendamento agendamento = agendamentoExistente.get();
 
-        boolean houveMudanca = false;
-
-        if (!agendamento.getData().equals(agendamentoRequest.getData()) ||
-                !agendamento.getFkServico().getId().equals(agendamentoRequest.getFkServico())) {
-            houveMudanca = true;
-        }
+        boolean houveMudanca =
+                !agendamento.getData().equals(agendamentoRequest.getData()) ||
+                        !agendamento.getFkServico().getId().equals(agendamentoRequest.getFkServicoId()) ||
+                        !agendamento.getFkUsuario().getId().equals(agendamentoRequest.getFkUsuarioId()) ||
+                        !agendamento.getFkEmpresa().getId().equals(agendamentoRequest.getFkEmpresaId());
 
         if (!houveMudanca) {
             return ResponseEntity.status(HttpStatus.NOT_MODIFIED).body("Nenhuma alteração detectada.");
         }
 
-        Usuario usuario = usuarioRepository.findById(agendamentoRequest.getFkUsuario())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
+        Usuario usuario = helper.buscarUsuario(agendamentoRequest.getFkUsuarioId());
+        Servico servico = helper.buscarServico(agendamentoRequest.getFkServicoId());
+        Empresa empresa = helper.buscarEmpresa(agendamentoRequest.getFkEmpresaId());
 
-        Servico servico = servicoRepository.findById(agendamentoRequest.getFkServico())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Serviço não encontrado"));
-
-        Empresa empresa = empresaRepository.findById(agendamentoRequest.getFkEmpresa())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Empresa não encontrada"));
+        StatusAgendamento statusAnterior = agendamento.getStatus();
 
         agendamento.setData(agendamentoRequest.getData());
         agendamento.setFkUsuario(usuario);
         agendamento.setFkServico(servico);
         agendamento.setFkEmpresa(empresa);
 
-        Agendamento agendamentoAtualizado = repository.save(agendamento);
+        // Primeiro histórico: registrar que o status foi alterado, para manter rastreabilidade da mudança
+        historicoService.registrarHistorico(agendamento, statusAnterior, StatusAgendamento.ALTERADO);
+        // Segundo histórico: voltar para AGENDADO (status final não muda, mas permite rastrear que houve edição)
+        historicoService.registrarHistorico(agendamento, StatusAgendamento.ALTERADO, StatusAgendamento.AGENDADO);
 
-        salvarHistoricoAutomaticamente(agendamentoAtualizado, agendamento.getStatus(), agendamento.getStatus(), usuario);
-
-        AgendamentoResponseDTO responseDTO = mapper.toAgendamentoResponseDto(agendamentoAtualizado);
+        AgendamentoResponseDTO responseDTO = mapper.toAgendamentoResponseDto(agendamento);
 
         if (responseDTO == null) {
-            logger.error("Falha ao mapear Agendamento para DTO");
+            logger.error("Falha ao atualizar o Agendamento");
             return ResponseEntity.status(400).build();
         }
 
         logger.info("Agendamento atualizado com sucesso: " + responseDTO);
-        return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(responseDTO);
     }
-
-    private void salvarHistoricoAutomaticamente(Agendamento agendamento, StatusAgendamento statusAnterior, StatusAgendamento statusAtual, Usuario usuario) {
-        HistoricoAgendamento historico = new HistoricoAgendamento();
-        historico.setData(LocalDateTime.now());
-        historico.setStatusAnterior(statusAnterior);
-        historico.setStatusAtual(statusAtual);
-        historico.setAgendamento(agendamento);
-        historico.setEmpresa(agendamento.getFkEmpresa());
-        historico.setUsuario(usuario);
-
-        historicoRepository.save(historico);
-    }
-
 
     //metodo softDelete - persiste os dados em um histórico e altera apenas o seu status para "cancelar" o agendamento.
     //não deleta o agendamento de fato da tabela agendamento
     @Transactional
     public ResponseEntity<?> removerAgendamento(Integer id) {
+        logger.info("[AgendamentoService] Deletando agendamento com id: {}", id);
         Optional<Agendamento> agendamentoExistente = repository.findByIdAndStatusNot(id, StatusAgendamento.CANCELADO);
 
         if (agendamentoExistente.isEmpty()) {
@@ -325,25 +291,41 @@ public class AgendamentoService {
         }
 
         Agendamento agendamento = agendamentoExistente.get();
-        Usuario usuario = agendamento.getFkUsuario();
-        Empresa empresa = agendamento.getFkEmpresa();
         StatusAgendamento statusAnterior = agendamento.getStatus();
+
+        Usuario usuario = helper.buscarUsuario(agendamento.getFkUsuario().getId());
+        Empresa empresa = helper.buscarEmpresa(agendamento.getFkEmpresa().getId());
 
         agendamento.setStatus(StatusAgendamento.CANCELADO);
         repository.save(agendamento);
 
-        HistoricoAgendamento historico = new HistoricoAgendamento();
-        historico.setData(LocalDateTime.now());
-        historico.setStatusAnterior(statusAnterior);
-        historico.setStatusAtual(StatusAgendamento.CANCELADO);
-        historico.setUsuario(usuario);
-        historico.setEmpresa(empresa);
-        historico.setAgendamento(agendamento);
-
-        historicoRepository.save(historico);
+        historicoService.registrarHistorico(agendamento, statusAnterior, StatusAgendamento.CANCELADO);
 
         logger.info("Agendamento deletado com sucesso: " + agendamento.getData());
         return ResponseEntity.status(200).body("Agendamento deletado e armazenado no histórico.");
     }
 
+    @Transactional
+    public ResponseEntity<?> confirmarAtendimento(Integer id) {
+        logger.info("[AgendamentoService] Confirmando atendimento para agendamento ID: {}", id);
+
+        Optional<Agendamento> agendamentoOptional = repository.findByIdAndStatus(id, StatusAgendamento.AGENDADO);
+
+        if (agendamentoOptional.isEmpty()) {
+            logger.warn("[AgendamentoService] Agendamento não encontrado ou foi cancelado: ID {}", id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Agendamento não encontrado ou foi cancelado.");
+        }
+
+        Agendamento agendamento = agendamentoOptional.get();
+
+        StatusAgendamento statusAnterior = agendamento.getStatus();
+        agendamento.setStatus(StatusAgendamento.REALIZADO);
+        repository.save(agendamento);
+
+        historicoService.registrarHistorico(agendamento, statusAnterior, StatusAgendamento.REALIZADO);
+
+        logger.info("[AgendamentoService] Atendimento confirmado com sucesso para agendamento ID: {}", id);
+
+        return ResponseEntity.ok("Atendimento confirmado com sucesso.");
+    }
 }

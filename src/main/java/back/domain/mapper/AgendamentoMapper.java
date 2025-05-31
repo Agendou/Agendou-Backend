@@ -20,23 +20,22 @@ public class AgendamentoMapper {
         agendamento.setId(agendamentoRequestDTO.getId());
         agendamento.setData(agendamentoRequestDTO.getData());
         agendamento.setDescricao(agendamentoRequestDTO.getDescricao());
-        agendamento.setStatus(agendamentoRequestDTO.getStatus());
 
-        if (agendamentoRequestDTO.getFkUsuario() != null) {
+        if (agendamentoRequestDTO.getFkUsuarioId() != null) {
             Usuario usuario = new Usuario();
-            usuario.setId(agendamentoRequestDTO.getFkUsuario());
+            usuario.setId(agendamentoRequestDTO.getFkUsuarioId());
             agendamento.setFkUsuario(usuario);
         }
 
-        if (agendamentoRequestDTO.getFkServico() != null) {
+        if (agendamentoRequestDTO.getFkServicoId() != null) {
             Servico servico = new Servico();
-            servico.setId(agendamentoRequestDTO.getFkServico());
+            servico.setId(agendamentoRequestDTO.getFkServicoId());
             agendamento.setFkServico(servico);
         }
 
-        if (agendamentoRequestDTO.getFkEmpresa() != null) {
+        if (agendamentoRequestDTO.getFkEmpresaId() != null) {
             Empresa empresa = new Empresa();
-            empresa.setId(agendamentoRequestDTO.getFkEmpresa());
+            empresa.setId(agendamentoRequestDTO.getFkEmpresaId());
             agendamento.setFkEmpresa(empresa);
         }
         return agendamento;
@@ -56,6 +55,7 @@ public class AgendamentoMapper {
                 agendamento.getData().format(horaFormatter)
         );
     }
+
     public AgendamentoResponseDTO toAgendamentoResponseDto(Agendamento entity) {
         if (entity == null) return null;
 

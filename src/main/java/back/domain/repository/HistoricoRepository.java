@@ -1,43 +1,50 @@
 package back.domain.repository;
 
+import back.domain.enums.StatusAgendamento;
 import back.domain.model.HistoricoAgendamento;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
+@Repository
 public interface HistoricoRepository extends JpaRepository<HistoricoAgendamento, Integer> {
+
+    List<HistoricoAgendamento> findByEmpresaId(Integer empresaId);
 
     List<HistoricoAgendamento> findByDataBetween(LocalDateTime dataInicio, LocalDateTime dataFim);
 
-    List<HistoricoAgendamento> findByStatusAtual(String status);
+    List<HistoricoAgendamento> findByStatusAtual(StatusAgendamento status);
 
-    List<HistoricoAgendamento> findByAgendamentoId(Integer idAgendamento);
+    @Query("SELECT h FROM HistoricoAgendamento h WHERE h.empresa.id = :empresaId AND h.data BETWEEN :dataInicio AND :dataFim")
+    List<HistoricoAgendamento> findByEmpresaIdAndDataBetween(
+            @Param("empresaId") Integer empresaId,
+            @Param("dataInicio") LocalDateTime dataInicio,
+            @Param("dataFim") LocalDateTime dataFim);
 
-    List<HistoricoAgendamento> findByDataAfter(LocalDateTime data);
-
-    List<HistoricoAgendamento> findAll();
-
-    Optional<HistoricoAgendamento> findById(Integer id);
-
-    @Query("SELECT h.usuario.id " +
+    @Query("SELECT h.usuario.nome " +
             "FROM HistoricoAgendamento h " +
             "WHERE h.data BETWEEN :startDate AND :endDate " +
-            "GROUP BY h.usuario.id " +
+            "AND h.empresa.id = :empresaId " +
+            "GROUP BY h.usuario.nome " +
             "HAVING COUNT(h) >= 4")
-    List<String> findActiveUsers(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+    List<String> findActiveUsers(@Param("startDate") LocalDateTime startDate,
+                                 @Param("endDate") LocalDateTime endDate,
+                                 @Param("empresaId") Integer empresaId);
 
-    @Query("SELECT COUNT(h) FROM HistoricoAgendamento h WHERE h.statusAtual = 'Cancelado'")
-    Long countCancelados();
+    @Query("SELECT COUNT(h) FROM HistoricoAgendamento h WHERE h.empresa.id = :empresaId AND h.statusAtual = :statusCancelado")
+    Long countCanceladosPorEmpresa(@Param("empresaId") Integer empresaId,
+                                   @Param("statusCancelado") StatusAgendamento statusCancelado);
 
-    @Query("SELECT FUNCTION('TO_CHAR', h.data, 'Month') AS mes, COUNT(h.id) AS total " +
-            "FROM HistoricoAgendamento h " +
-            "GROUP BY FUNCTION('TO_CHAR', h.data, 'Month'), FUNCTION('TO_CHAR', h.data, 'YYYY') " +
-            "ORDER BY FUNCTION('TO_CHAR', h.data, 'YYYY'), FUNCTION('TO_CHAR', h.data, 'MM')")
-    List<Object[]> totalAgendamentosPorMes();
+    @Query(value = "SELECT DATE_FORMAT(data, '%Y-%m') AS mes, COUNT(*) AS total " +
+            "FROM historico_agendamento " +
+            "WHERE fk_empresa = :empresaId " +
+            "GROUP BY DATE_FORMAT(data, '%Y-%m') " +
+            "ORDER BY DATE_FORMAT(data, '%Y-%m')", nativeQuery = true)
+    List<Object[]> totalAgendamentosPorMes(@Param("empresaId") Integer empresaId);
 
-
+    List<HistoricoAgendamento> findByAgendamentoId(Integer id);
 }
