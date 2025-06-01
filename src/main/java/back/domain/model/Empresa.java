@@ -1,7 +1,6 @@
 package back.domain.model;
 
 import back.domain.enums.EmpresaRole;
-import back.domain.enums.UsuarioRole;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
