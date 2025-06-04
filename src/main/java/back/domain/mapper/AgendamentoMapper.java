@@ -64,6 +64,7 @@ public class AgendamentoMapper {
         dto.setId(entity.getId());
         dto.setData(entity.getData());
         dto.setDescricao(entity.getDescricao());
+        dto.setStatus(String.valueOf(entity.getStatus()));
         dto.setFkUsuario(entity.getFkUsuario());
         dto.setFkServico(entity.getFkServico());
         dto.setFkEmpresa(entity.getFkEmpresa());
