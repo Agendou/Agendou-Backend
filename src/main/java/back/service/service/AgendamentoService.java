@@ -46,7 +46,10 @@ public class AgendamentoService {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Campos obrigatórios não preenchidos.");
         }
 
-        if (agendamentoRequest.getData().isBefore(LocalDateTime.now())) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime data = agendamentoRequest.getData();
+        if (data.isBefore(now)) {
+            logger.warn("[AgendamentoService] Data inválida: {} é anterior a {}", data, now);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Data do agendamento não pode ser no passado.");
         }
 
